@@ -701,6 +701,25 @@
           </div>
         </div>
       </div>
+
+      <!-- BANNER DE CONFIGURACIÓN SINCRONIZACIÓN GITHUB NUBE -->
+      <div id="github-sync-banner" hidden style="margin-top:12px;background:#050c14;border:1.5px solid #00f0ff;border-radius:8px;padding:14px;font-family:var(--mono);font-size:.82rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="color:#00f0ff;font-size:.9rem">☁️ VINCULACIÓN NUBE GITHUB (PC ⟷ MÓVIL DIRECTO)</strong>
+          <button type="button" id="btn-close-github-sync" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem">✕</button>
+        </div>
+        <div style="color:var(--text);line-height:1.6;margin-bottom:10px">
+          Introduce tu Token Personal de GitHub para sincronizar de por vida sin límites ni servidores externos. Se almacena únicamente en la memoria de este navegador (`localStorage`).
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+          <input type="password" id="input-github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="flex:1;min-width:240px;background:#0b141d;border:1px solid #00f0ff66;color:#00f0ff;font-family:var(--mono);padding:8px 10px;border-radius:4px;font-size:.85rem">
+          <button type="button" id="btn-save-github-token" style="font-family:var(--mono);font-weight:700;padding:8px 14px;background:#00f0ff;color:#02070d;border:none;border-radius:4px;cursor:pointer">💾 Guardar y Sincronizar</button>
+          <button type="button" id="btn-clear-github-token" style="font-family:var(--mono);padding:8px 12px;background:transparent;border:1px solid var(--red);color:var(--red);border-radius:4px;cursor:pointer">Desconectar</button>
+        </div>
+        <div style="font-size:.76rem;color:var(--muted)">
+          👉 ¿No tienes tu token? <a href="https://github.com/settings/tokens/new?description=ScouterDBZ-Sync&scopes=repo" target="_blank" style="color:var(--cyan);font-weight:700;text-decoration:underline">Generar token en GitHub en 1 clic</a> (marca permiso <code>repo</code> y pulsa <em>Generate token</em>).
+        </div>
+      </div>
     </header>
 
     <!-- NAVEGACIÓN -->
@@ -1735,7 +1754,7 @@
 
       showToast(`✅ TELEMETRÍA DEL ${entry.date} GRABADA CON ÉXITO`);
       renderStats();
-      syncWithCloud(true);
+      syncWithGitHub(true);
     });
 
     // --- RECARGAR DATOS DEL EXCEL ---
@@ -1998,7 +2017,7 @@
             const merged = Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
             saveLogs(merged);
             renderStats();
-            syncWithCloud(true);
+            syncWithGitHub(true);
             showToast(`📥 ${imported.length} REGISTROS IMPORTADOS CON ÉXITO`);
           } else {
             showToast('⚠️ Archivo JSON no válido');
@@ -2020,25 +2039,87 @@
       downloadAnchor.remove();
     });
 
-    // --- SINCRONIZACIÓN EN LA NUBE (PC <-> MÓVIL) ---
-    const CLOUD_SYNC_ID = 'ff808181a09d98f701a1c5fc1a927f45';
-    const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_SYNC_ID}`;
+    // --- SINCRONIZACIÓN EN LA NUBE (GITHUB REST API 100% FIABLE) ---
+    const GITHUB_REPO_OWNER = 'celticmoon17-alt';
+    const GITHUB_REPO_NAME = 'scouter-dbz';
+    const GITHUB_FILE_PATH = 'data/telemetry_logs.json';
+    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_FILE_PATH}`;
     const btnCloudSync = document.getElementById('btn-cloud-sync');
+    const githubSyncBanner = document.getElementById('github-sync-banner');
+    const inputGithubToken = document.getElementById('input-github-token');
+    const btnSaveGithubToken = document.getElementById('btn-save-github-token');
+    const btnClearGithubToken = document.getElementById('btn-clear-github-token');
+    const btnCloseGithubSync = document.getElementById('btn-close-github-sync');
 
-    async function syncWithCloud(silent = false) {
+    function getGithubToken() {
+      return localStorage.getItem('scouter_github_token') || '';
+    }
+
+    if (inputGithubToken && getGithubToken()) {
+      inputGithubToken.value = getGithubToken();
+    }
+
+    btnSaveGithubToken?.addEventListener('click', () => {
+      const val = inputGithubToken.value.trim();
+      if (!val) {
+        showToast('⚠️ Introduce un token válido de GitHub');
+        return;
+      }
+      localStorage.setItem('scouter_github_token', val);
+      if (githubSyncBanner) githubSyncBanner.hidden = true;
+      showToast('🔑 Token guardado. Sincronizando con GitHub...');
+      syncWithGitHub(false);
+    });
+
+    btnClearGithubToken?.addEventListener('click', () => {
+      localStorage.removeItem('scouter_github_token');
+      if (inputGithubToken) inputGithubToken.value = '';
+      showToast('Token eliminado');
+      if (btnCloudSync) btnCloudSync.textContent = '☁️ Sincronizar Nube';
+    });
+
+    btnCloseGithubSync?.addEventListener('click', () => {
+      if (githubSyncBanner) githubSyncBanner.hidden = true;
+    });
+
+    async function syncWithGitHub(silent = false) {
+      const token = getGithubToken();
+      if (!token) {
+        if (!silent && githubSyncBanner) {
+          githubSyncBanner.hidden = false;
+        }
+        return;
+      }
       if (!navigator.onLine) {
         if (!silent) showToast('⚠️ Sin conexión para sincronizar');
         return;
       }
       if (btnCloudSync) btnCloudSync.textContent = '⏳ Conectando...';
+
       try {
-        const res = await fetch(CLOUD_API_URL);
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28'
+        };
+
+        // 1. Obtener archivo actual de GitHub
         let cloudLogs = [];
+        let fileSha = null;
+        const res = await fetch(GITHUB_API_URL, { headers });
         if (res.ok) {
-          const json = await res.json();
-          cloudLogs = json.data?.logs || [];
+          const fileData = await res.json();
+          fileSha = fileData.sha;
+          if (fileData.content) {
+            try {
+              const decoded = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
+              const parsed = JSON.parse(decoded);
+              cloudLogs = Array.isArray(parsed) ? parsed : (parsed.logs || []);
+            } catch (e) {}
+          }
         }
 
+        // 2. Fusionar con logs locales (conservando los más completos/recientes)
         const localLogs = loadLogs();
         const map = new Map();
         EXCEL_SEED_LOGS.forEach(l => map.set(l.date, l));
@@ -2047,39 +2128,50 @@
 
         const merged = Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
         saveLogs(merged);
+        renderStats();
 
-        const payload = {
-          name: 'scouter_dbz_cloud_sync_dani',
-          data: {
-            version: 2,
-            updatedAt: new Date().toISOString(),
-            syncChannel: 'dani-red-ribbon',
-            logs: merged
-          }
+        // 3. Subir unión actualizada a GitHub
+        const jsonStr = JSON.stringify(merged, null, 2);
+        const encodedContent = btoa(unescape(encodeURIComponent(jsonStr)));
+        const putBody = {
+          message: `telemetry: sync ${merged.length} logs [${new Date().toISOString().split('T')[0]}]`,
+          content: encodedContent
         };
-        await fetch(CLOUD_API_URL, {
+        if (fileSha) putBody.sha = fileSha;
+
+        const putRes = await fetch(GITHUB_API_URL, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify(putBody)
         });
 
-        renderStats();
-        if (btnCloudSync) btnCloudSync.textContent = '☁️ Nube Sincronizada';
-        setTimeout(() => { if (btnCloudSync) btnCloudSync.textContent = '☁️ Sincronizar Nube'; }, 2500);
-        if (!silent) showToast('☁️ DATOS SINCRONIZADOS ENTRE PC Y MÓVIL');
+        if (putRes.ok) {
+          if (btnCloudSync) btnCloudSync.textContent = '☁️ Sincronizado';
+          setTimeout(() => { if (btnCloudSync) btnCloudSync.textContent = '☁️ Sincronizar Nube'; }, 2500);
+          if (!silent) showToast('☁️ SINCRONIZADO CON GITHUB CON ÉXITO');
+        } else {
+          throw new Error('Error al guardar en GitHub');
+        }
       } catch (err) {
-        if (btnCloudSync) btnCloudSync.textContent = '⚠️ Error Nube';
+        if (btnCloudSync) btnCloudSync.textContent = '⚠️ Error Sync';
         setTimeout(() => { if (btnCloudSync) btnCloudSync.textContent = '☁️ Sincronizar Nube'; }, 2500);
-        if (!silent) showToast('⚠️ No se pudo sincronizar con la nube');
+        if (!silent) showToast('⚠️ Error al sincronizar con GitHub');
       }
     }
 
-    btnCloudSync?.addEventListener('click', () => syncWithCloud(false));
+    btnCloudSync?.addEventListener('click', () => {
+      const token = getGithubToken();
+      if (!token) {
+        if (githubSyncBanner) githubSyncBanner.hidden = !githubSyncBanner.hidden;
+      } else {
+        syncWithGitHub(false);
+      }
+    });
 
     // Render inicial y sincronización automática
     renderStats();
     window.addEventListener('load', () => {
-      setTimeout(() => syncWithCloud(true), 1000);
+      setTimeout(() => syncWithGitHub(true), 1000);
     });
 
     // --- PWA SERVICE WORKER & INSTALADOR MÓVIL ---
