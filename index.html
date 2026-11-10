@@ -2064,20 +2064,27 @@
       }
     }
 
-    // --- DBZ SOUND FX ENGINE (CLIPS DE AUDIO AUTÉNTICOS DE LA SERIE) ---
+    // --- DBZ SOUND FX ENGINE (CLIPS AUTÉNTICOS DE DRAGON BALL Z) ---
     let soundEnabled = localStorage.getItem('scouter_sound_enabled') !== 'false';
 
-    const SFX = {
-      scouter: new Audio('assets/audio/scouter.mp3'),
-      teleport: new Audio('assets/audio/teleport.mp3'),
-      powerup: new Audio('assets/audio/powerup.mp3'),
-      punch: new Audio('assets/audio/punch.mp3')
-    };
+    const testAudio = new Audio();
+    const canPlayOgg = !!(testAudio.canPlayType && testAudio.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
+    const sfxExt = canPlayOgg ? 'ogg' : 'mp3';
 
-    Object.values(SFX).forEach(aud => {
-      aud.preload = 'auto';
-      aud.volume = 0.7;
-    });
+    function loadSfx(name) {
+      const a = new Audio(`assets/audio/${name}.${sfxExt}`);
+      a.preload = 'auto';
+      a.volume = 0.65;
+      return a;
+    }
+
+    const SFX = {
+      scouter: loadSfx('scouter'),
+      teleport: loadSfx('teleport'),
+      powerup: loadSfx('powerup'),
+      punch: loadSfx('punch'),
+      shenron: loadSfx('shenron')
+    };
 
     const btnSoundToggle = document.getElementById('btn-sound-toggle');
     function updateSoundToggleBtn() {
@@ -2107,7 +2114,7 @@
     function playScouterBeep() { playAudioSafe(SFX.scouter); }
     function playInstantTransmission() { playAudioSafe(SFX.teleport); }
     function playKiPowerUp() { playAudioSafe(SFX.powerup); }
-    function playShenronRoar() { playAudioSafe(SFX.powerup); }
+    function playShenronRoar() { playAudioSafe(SFX.shenron); }
     function playPunchSound() { playAudioSafe(SFX.punch); }
 
     // --- TOAST NOTIFICATION ---
@@ -2289,6 +2296,7 @@
 
     // --- TOGGLE EJERCICIOS DETALLADOS ---
     btnToggleExercises.addEventListener('click', () => {
+      playInstantTransmission();
       const isHidden = exercisesPanel.hidden;
       exercisesPanel.hidden = !isHidden;
       toggleIndicator.textContent = isHidden ? '− PLEGAR' : '+ DESPLEGAR';
@@ -2307,11 +2315,15 @@
         <td><input type="text" class="ex-sets" value="${sets}" placeholder="3-4"></td>
         <td><button type="button" class="btn-row-del" title="Eliminar fila">✕</button></td>
       `;
-      tr.querySelector('.btn-row-del').addEventListener('click', () => tr.remove());
+      tr.querySelector('.btn-row-del').addEventListener('click', () => {
+        playPunchSound();
+        tr.remove();
+      });
       exerciseTbody.appendChild(tr);
     }
 
     function loadPresetForDay() {
+      playScouterBeep();
       exerciseTbody.innerHTML = '';
       const parts = fDate.value.split('-');
       const d = new Date(parts[0], parts[1] - 1, parts[2]);
@@ -2324,7 +2336,10 @@
     }
 
     btnLoadPreset.addEventListener('click', loadPresetForDay);
-    btnAddExerciseRow.addEventListener('click', () => addExerciseRow());
+    btnAddExerciseRow.addEventListener('click', () => {
+      playPunchSound();
+      addExerciseRow();
+    });
 
     // --- CAPTURA CARDIO ---
     dropZone.addEventListener('click', () => fCardioFile.click());

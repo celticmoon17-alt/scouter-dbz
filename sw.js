@@ -1,4 +1,4 @@
-const CACHE_NAME = 'scouter-dbz-pwa-v2';
+const CACHE_NAME = 'scouter-dbz-pwa-v3';
 const ASSETS = [
   './',
   './index.html',
