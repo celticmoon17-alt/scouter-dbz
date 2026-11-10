@@ -1,10 +1,11 @@
-const CACHE_NAME = 'scouter-dbz-pwa-v1';
+const CACHE_NAME = 'scouter-dbz-pwa-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './assets/icon-192.png',
   './assets/icon-512.png',
+  './assets/dbz_android_crt_profile.jpg',
   './assets/dbz_android_head.jpg',
   './assets/dbz_android_wireframe.jpg',
   './assets/dbz_android_core.jpg'

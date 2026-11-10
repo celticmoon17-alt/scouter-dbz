@@ -1045,6 +1045,23 @@
           </div>
         </div>
 
+        <!-- MONITOR CRT PRINCIPAL: PERFIL BIOMECÁNICO Y % DE MEJORA EN EJERCICIOS -->
+        <div class="scouter-card" style="margin-bottom:16px;border:1.5px solid #00ff66;background:#03090f">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            <span style="font-family:var(--mono);color:#00ff66;font-weight:700;font-size:.92rem;letter-spacing:1px">🖥️ MONITOR CRT CENTRAL // PERFIL BIOMECÁNICO &amp; % DE MEJORA EN EJERCICIOS</span>
+            <span class="scouter-formula" id="scouter-avg-gain-badge">Δ MEJORA MEDIA FUERZA: +49.0% [CLASE S]</span>
+          </div>
+          <div style="position:relative;width:100%;border-radius:8px;overflow:hidden;border:1px solid #00ff6666;background:#000;margin-bottom:12px">
+            <img src="assets/dbz_android_crt_profile.jpg" alt="CRT Monitor Biomechanical Profile & Exercise Progression" style="width:100%;height:auto;display:block">
+          </div>
+          <div style="font-family:var(--mono);font-size:.76rem;color:var(--cyan);margin-bottom:8px;letter-spacing:1px">
+            ⚡ EVOLUCIÓN DINÁMICA POR EJERCICIO (CARGA INICIAL ➔ RÉCORD ACTUAL // % MEJORA):
+          </div>
+          <div id="scouter-exercise-progress-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px">
+            <!-- Calculado dinámicamente desde los registros -->
+          </div>
+        </div>
+
         <!-- BLUEPRINTS WIREFRAME HOLOGRÁFICOS (DE LAS CAPTURAS ADJUNTAS) -->
         <div class="scouter-grid">
           
@@ -1910,6 +1927,48 @@
         const isHigh = !latestLog.energy || latestLog.energy.toLowerCase().includes('androide') || latestLog.energy.toLowerCase().includes('alta') || latestLog.energy.toLowerCase().includes('much');
         elScouterBarEnergy.style.width = isHigh ? '96%' : (latestLog.energy === 'Normal' ? '75%' : '50%');
         if (elScouterBarEnergyClass) elScouterBarEnergyClass.textContent = isHigh ? 'CLASE S+' : 'CLASE B';
+      }
+
+      // Calcular % de mejora por ejercicio (base inicial del Excel + récords nuevos)
+      const baseExercises = [
+        { key: 'prensa', label: 'Prensa de Pierna', base: 80, max: 120 },
+        { key: 'palanca', label: 'Remo con Palanca', base: 40, max: 70 },
+        { key: 'jal', label: 'Jalón al Pecho', base: 50, max: 70 },
+        { key: 'remo en t', label: 'Remo en T', base: 20, max: 40 },
+        { key: 'tracci', label: 'Tracción Vertical Máq.', base: 60, max: 80 },
+        { key: 'polea', label: 'Remo con Polea', base: 40, max: 50 },
+        { key: 'cu', label: 'Extensión Cuádriceps', base: 50, max: 60 },
+        { key: 'aductor', label: 'Aductor / Abductor', base: 50, max: 60 }
+      ];
+      logs.forEach(l => {
+        (l.exercises || []).forEach(ex => {
+          const w = parseFloat(ex.weight);
+          if (w > 0 && ex.name) {
+            const lower = ex.name.toLowerCase();
+            const found = baseExercises.find(b => lower.includes(b.key));
+            if (found && w > found.max) found.max = w;
+          }
+        });
+      });
+      const exGrid = document.getElementById('scouter-exercise-progress-grid');
+      if (exGrid) {
+        let sumPct = 0;
+        exGrid.innerHTML = baseExercises.map(b => {
+          const pct = Math.round(((b.max - b.base) / b.base) * 100);
+          sumPct += pct;
+          return `
+            <div style="background:rgba(0,255,102,0.06);border:1px solid #00ff6644;border-left:3px solid #00ff66;padding:7px 10px;border-radius:4px;font-family:var(--mono);font-size:.78rem;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="color:#00ff66;font-weight:700">${b.label}</div>
+                <div style="color:var(--muted);font-size:.72rem">${b.base} kg ➔ <strong style="color:var(--text)">${b.max} kg</strong></div>
+              </div>
+              <span style="color:#ffb703;font-weight:900;font-size:.9rem;background:#02070d;padding:3px 7px;border-radius:4px;border:1px solid #ffb70366">+${pct}%</span>
+            </div>
+          `;
+        }).join('');
+        const avgGain = (sumPct / baseExercises.length).toFixed(1);
+        const avgBadge = document.getElementById('scouter-avg-gain-badge');
+        if (avgBadge) avgBadge.textContent = `Δ MEJORA MEDIA FUERZA: +${avgGain}% [CLASE S]`;
       }
     }
 
