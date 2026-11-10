@@ -724,9 +724,12 @@
 
     <!-- NAVEGACIÓN -->
     <nav class="tabs">
-      <button type="button" class="tab-btn active" data-tab="tab-form">📋 Registro Diario</button>
-      <button type="button" class="tab-btn" data-tab="tab-stats">📊 Telemetría &amp; Stats (<span id="tab-stat-count">0</span>)</button>
-      <button type="button" class="tab-btn" data-tab="tab-scouter">🤖 Scanner Androide DBZ</button>
+      <button type="button" class="tab-btn active" data-tab="tab-form">📋 Registro</button>
+      <button type="button" class="tab-btn" data-tab="tab-stats">📊 Telemetría (<span id="tab-stat-count">0</span>)</button>
+      <button type="button" class="tab-btn" data-tab="tab-balance">⚖️ Balance Calórico</button>
+      <button type="button" class="tab-btn" data-tab="tab-time-chamber">⏳ Sala del Tiempo</button>
+      <button type="button" class="tab-btn" data-tab="tab-regen">🧬 Cámara Regeneración</button>
+      <button type="button" class="tab-btn" data-tab="tab-scouter">🤖 Scanner DBZ</button>
     </nav>
 
     <!-- PESTAÑA 1: FORMULARIO DIARIO -->
@@ -817,16 +820,25 @@
             </div>
           </div>
 
-          <!-- ESTIMADOR DE CALORÍAS EN VIVO -->
-          <div style="margin-top:14px;background:#050d15;border:1px solid #ffb70366;border-left:3px solid var(--amber);border-radius:6px;padding:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <!-- ESTIMADOR DE CALORÍAS & PROTEÍNA EN VIVO -->
+          <div style="margin-top:14px;background:#050d15;border:1px solid #ffb70366;border-left:3px solid var(--amber);border-radius:6px;padding:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
             <div>
-              <div style="font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:1px">🔥 ESTIMACIÓN CALÓRICA INGERIDA (CÁLCULO AUTOMÁTICO)</div>
-              <div style="font-family:var(--mono);font-size:1.45rem;font-weight:900;color:var(--amber)" id="display-calories-est">~0 kcal</div>
-              <div style="font-size:.74rem;color:var(--cyan);margin-top:2px;font-family:var(--mono)" id="display-calories-breakdown">Desayuno: — | Comida: — | Cena: —</div>
+              <div style="font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:1px">🔥 ENERGÍA &amp; PROTEÍNA ESTIMADA (CÁLCULO AUTOMÁTICO)</div>
+              <div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin:4px 0">
+                <span style="font-family:var(--mono);font-size:1.45rem;font-weight:900;color:var(--amber)" id="display-calories-est">~0 kcal</span>
+                <span style="font-family:var(--mono);font-size:1.2rem;font-weight:900;color:#00ff66" id="display-protein-est">🥩 ~0g Prot</span>
+              </div>
+              <div style="font-size:.74rem;color:var(--cyan);font-family:var(--mono)" id="display-calories-breakdown">Desayuno: — | Comida: — | Cena: —</div>
             </div>
-            <div style="display:flex;align-items:center;gap:6px">
-              <label for="f-calories-override" style="font-family:var(--mono);font-size:.74rem;color:var(--muted)">Ajuste manual (kcal):</label>
-              <input type="number" id="f-calories-override" placeholder="Auto" style="width:90px;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--amber);font-family:var(--mono);font-weight:700;border-radius:4px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <label for="f-calories-override" style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Kcal manual:</label>
+                <input type="number" id="f-calories-override" placeholder="Auto" style="width:85px;padding:4px 6px;background:#090e13;border:1px solid var(--line);color:var(--amber);font-family:var(--mono);font-weight:700;border-radius:4px">
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <label for="f-protein-override" style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Prot manual:</label>
+                <input type="number" id="f-protein-override" placeholder="Auto" style="width:85px;padding:4px 6px;background:#090e13;border:1px solid var(--line);color:#00ff66;font-family:var(--mono);font-weight:700;border-radius:4px">
+              </div>
             </div>
           </div>
         </div>
@@ -1055,6 +1067,156 @@
         </div>
         <div id="history-container">
           <!-- Historial de días -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA: BALANCE CALÓRICO & DÉFICIT NETO -->
+    <section id="tab-balance" hidden>
+      <div class="card card-hud">
+        <div class="card-title">⚖️ ECUACIÓN METABÓLICA &amp; DÉFICIT CALÓRICO DIARIO</div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">
+          Cálculo del gasto energético total (TDEE) cruzado con la ingesta calórica para predecir la velocidad de quema de grasa hacia la meta de 90 kg.
+        </div>
+
+        <div class="stat-boxes">
+          <div class="stat-box">
+            <div class="stat-label">Metabolismo Basal (TMB)</div>
+            <div class="stat-val" style="color:var(--cyan)">~1.920 kcal</div>
+            <div style="font-size:.72rem;color:var(--muted)">Consumo vital (1.83m / 96kg)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Ingesta Media</div>
+            <div class="stat-val" id="bal-ingesta-val" style="color:var(--amber)">~1.850 kcal</div>
+            <div style="font-size:.72rem;color:var(--muted)">Nutrición diaria estimada</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Gasto Total Diario (TDEE)</div>
+            <div class="stat-val" id="bal-tdee-val" style="color:#00ff66">~2.650 kcal</div>
+            <div style="font-size:.72rem;color:var(--muted)">Basal + Elíptica + Paseos</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Déficit Diario Neto</div>
+            <div class="stat-val" id="bal-deficit-val" style="color:var(--accent)">-800 kcal</div>
+            <div style="font-size:.72rem;color:var(--muted)">Ritmo quema de grasa</div>
+          </div>
+        </div>
+
+        <!-- PROYECCIÓN METAS 90 KG -->
+        <div style="background:#050c14;border:1px solid var(--accent);border-radius:8px;padding:16px;margin-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            <strong style="font-family:var(--mono);color:var(--accent);font-size:.9rem">🎯 PROYECCIÓN OBJETIVO 90.0 KG (FASE FINAL RECOMPOSICIÓN)</strong>
+            <span style="font-family:var(--mono);font-size:.8rem;color:var(--amber)" id="bal-eta-days">Faltan ~6.0 kg (aprox. 57 días)</span>
+          </div>
+          <div class="weight-bar-bg" style="height:14px;background:#0d1822;border:1px solid #00ff6644">
+            <div class="weight-bar-fill" id="bal-goal-bar" style="width:66.7%;background:linear-gradient(90deg, #00f0ff, #00ff66)"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-top:6px">
+            <span>Punto partida: 108.0 kg</span>
+            <span style="color:var(--cyan);font-weight:700">Actual: <span id="bal-current-weight">96.0 kg</span> (-12.0 kg)</span>
+            <span style="color:var(--accent);font-weight:700">Meta: 90.0 kg</span>
+          </div>
+        </div>
+
+        <!-- BALANCE DÍA A DÍA -->
+        <div style="margin-top:16px">
+          <div style="font-family:var(--mono);font-size:.82rem;color:var(--cyan);margin-bottom:10px">
+            📊 BALANCE NETO POR DÍA (INGESTA VS GASTO TOTAL):
+          </div>
+          <div id="balance-day-list" style="display:flex;flex-direction:column;gap:8px">
+            <!-- Filas dinámicas generadas en renderStats -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA: SALA DEL TIEMPO // SALÓN DE RÉCORDS (PRS) -->
+    <section id="tab-time-chamber" hidden>
+      <div class="scouter-panel" style="border-color:#ffb703;box-shadow:0 0 25px rgba(255, 183, 3, 0.15)">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="rr-badge" style="background:#ffb703;color:#050c14;border-color:#ffd166">PR</span>
+            <span style="font-family:var(--mono);color:#ffb703;font-weight:700;letter-spacing:2px;font-size:1.05rem">⏳ SALA DEL TIEMPO // SALÓN DE RÉCORDS PERSONALES</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:1px">
+            «1 DÍA AQUÍ EQUIVALE A 1 AÑO DE EVOLUCIÓN BIOMECÁNICA»
+          </div>
+        </div>
+
+        <!-- BANNER DE RETO DE GRAVEDAD AUMENTADA HOY -->
+        <div style="background:#0a1208;border:1px solid #00ff66;border-radius:8px;padding:14px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="font-size:1.2rem">⚡</span>
+            <strong style="font-family:var(--mono);color:#00ff66;font-size:.92rem">RETO DE SOBRECARGA PROGRESIVA PARA HOY:</strong>
+          </div>
+          <div style="font-family:var(--mono);font-size:.85rem;color:var(--text)" id="chamber-today-challenge">
+            Cargando recomendación según rutina del día...
+          </div>
+        </div>
+
+        <!-- TABLA DE RÉCORDS DE FUERZA (PRS) -->
+        <div style="font-family:var(--mono);color:var(--cyan);font-size:.85rem;margin-bottom:12px;letter-spacing:1px">
+          🏆 RÉCORDS PERSONALES CONSOLIDADOS (HALL OF FAME):
+        </div>
+        <div class="scouter-grid" id="chamber-records-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+          <!-- Récords dinámicos -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA: CÁMARA DE REGENERACIÓN // SCANNER CORPORAL -->
+    <section id="tab-regen" hidden>
+      <div class="card card-hud">
+        <div class="card-title">🧬 CÁMARA DE REGENERACIÓN // FOTOS DE PROGRESO &amp; BIO-MÉTRICAS</div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">
+          Registro visual y comparativo de recomposición corporal desde el inicio en 108.0 kg hasta los 96.0 kg actuales. Las fotos se almacenan únicamente de forma privada en tu dispositivo local.
+        </div>
+
+        <!-- COMPARADOR ANTES / AHORA -->
+        <div class="grid-2">
+          <div style="background:#050c14;border:1px solid var(--line);border-radius:8px;padding:14px;text-align:center">
+            <div style="font-family:var(--mono);font-weight:700;color:var(--accent);font-size:.88rem;margin-bottom:8px">PUNTO DE PARTIDA // 108.0 KG (26/07)</div>
+            <div class="drop-zone" id="regen-drop-before" style="min-height:220px;display:flex;flex-direction:column;justify-content:center;align-items:center">
+              <input type="file" id="regen-file-before" accept="image/*" style="display:none">
+              <img id="regen-img-before" src="" style="max-height:200px;border-radius:6px" hidden>
+              <div id="regen-text-before" class="drop-zone-text">📸 Pulsa aquí para añadir tu foto inicial (108 kg)</div>
+            </div>
+          </div>
+
+          <div style="background:#050c14;border:1px solid #00ff6666;border-radius:8px;padding:14px;text-align:center">
+            <div style="font-family:var(--mono);font-weight:700;color:#00ff66;font-size:.88rem;margin-bottom:8px">ESTADO ACTUAL // 96.0 KG (-12.0 KG)</div>
+            <div class="drop-zone" id="regen-drop-current" style="min-height:220px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-color:#00ff6666">
+              <input type="file" id="regen-file-current" accept="image/*" style="display:none">
+              <img id="regen-img-current" src="" style="max-height:200px;border-radius:6px" hidden>
+              <div id="regen-text-current" class="drop-zone-text">📸 Pulsa aquí para añadir tu foto actual (96 kg)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BIO-MEDIDAS CORPORALES (CINTURA, PECHO, ETC) -->
+        <div style="margin-top:16px;background:#050c14;border:1px solid var(--line);border-radius:8px;padding:14px">
+          <div style="font-family:var(--mono);color:var(--cyan);font-size:.85rem;margin-bottom:10px">
+            📏 PERÍMETROS CORPORALES (CM) [OPCIONAL]:
+          </div>
+          <div class="grid-4" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+            <div>
+              <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Cintura (cm)</label>
+              <input type="number" step="0.5" id="f-measure-waist" placeholder="Ej.: 98" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+            </div>
+            <div>
+              <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Pecho (cm)</label>
+              <input type="number" step="0.5" id="f-measure-chest" placeholder="Ej.: 112" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+            </div>
+            <div>
+              <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Brazo (cm)</label>
+              <input type="number" step="0.5" id="f-measure-arm" placeholder="Ej.: 39" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+            </div>
+            <div>
+              <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Muslo (cm)</label>
+              <input type="number" step="0.5" id="f-measure-thigh" placeholder="Ej.: 64" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+            </div>
+          </div>
+          <button type="button" id="btn-save-measures" style="margin-top:10px;font-family:var(--mono);font-weight:700;font-size:.8rem;padding:6px 14px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer">💾 Guardar Perímetros</button>
         </div>
       </div>
     </section>
@@ -1559,7 +1721,9 @@
 
     const fRoutineDone = document.getElementById('f-routine-done');
     const fCaloriesOverride = document.getElementById('f-calories-override');
+    const fProteinOverride = document.getElementById('f-protein-override');
     const displayCaloriesEst = document.getElementById('display-calories-est');
+    const displayProteinEst = document.getElementById('display-protein-est');
     const displayCaloriesBreakdown = document.getElementById('display-calories-breakdown');
     const btnToggleExercises = document.getElementById('btn-toggle-exercises');
     const exercisesPanel = document.getElementById('exercises-panel');
@@ -1578,7 +1742,7 @@
 
     let currentCardioBase64 = '';
 
-    // --- ESTIMACIÓN INTELIGENTE DE CALORÍAS INGERIDAS ---
+    // --- ESTIMACIÓN INTELIGENTE DE CALORÍAS & PROTEÍNA INGERIDAS ---
     function estimateMealCalories(text) {
       if (!text || !text.trim()) return 0;
       const lower = text.toLowerCase();
@@ -1620,35 +1784,74 @@
       return Math.round(kcal);
     }
 
+    function estimateMealProtein(text) {
+      if (!text || !text.trim()) return 0;
+      const lower = text.toLowerCase();
+      let prot = 0;
+      let matched = false;
+      const gramMatches = [...lower.matchAll(/(\d+)\s*g(?:r|ramos)?\s*([a-záéíóúñ]+)/g)];
+      gramMatches.forEach(m => {
+        const g = parseFloat(m[1]);
+        const f = m[2];
+        if (f.includes('pollo') || f.includes('pavo') || f.includes('pechuga')) { prot += (g * 0.24); matched = true; }
+        else if (f.includes('ternera') || f.includes('carne') || f.includes('buey')) { prot += (g * 0.22); matched = true; }
+        else if (f.includes('salmon') || f.includes('salmón') || f.includes('pescado')) { prot += (g * 0.20); matched = true; }
+      });
+      if ((lower.includes('pollo') || lower.includes('pavo') || lower.includes('pechuga')) && !matched) prot += 55;
+      if ((lower.includes('ternera') || lower.includes('carne') || lower.includes('filete')) && !matched) prot += 55;
+      if ((lower.includes('salmon') || lower.includes('salmón') || lower.includes('pescado')) && !matched) prot += 40;
+      if (lower.includes('lenteja') || lower.includes('garbanzo')) prot += 24;
+      if (lower.includes('quesadilla') || lower.includes('quiche') || lower.includes('quiché')) prot += 28;
+      if (lower.includes('huevo') || lower.includes('tortilla')) prot += 14;
+      if (lower.includes('proteina') || lower.includes('proteína') || lower.includes('scoop') || lower.includes('whey')) prot += 24;
+      if (lower.includes('cottage') || lower.includes('queso')) prot += 14;
+      if (prot === 0 && text.trim().length > 3) prot = 25;
+      return Math.round(prot);
+    }
+
     function calculateDayCalories(item) {
       let bKcal = 0;
+      let bProt = 0;
       const bText = item.breakfast || item.breakfastType || '';
       if (bText.includes('Porridge')) {
         bKcal = 480;
+        bProt = 35;
       } else if (bText.includes('Tostada')) {
         bKcal = 420;
+        bProt = 38;
       } else if (bText.toLowerCase().includes('cafe') || bText.toLowerCase().includes('café') || bText.toLowerCase().includes('ayuno')) {
         bKcal = 20;
+        bProt = 1;
       } else if (bText.toLowerCase().includes('libre')) {
         bKcal = 650;
+        bProt = 25;
       } else {
         bKcal = estimateMealCalories(bText);
-        if (bKcal === 0 && bText.length > 2) bKcal = 380;
+        bProt = estimateMealProtein(bText);
+        if (bKcal === 0 && bText.length > 2) { bKcal = 380; bProt = 20; }
       }
 
       const lKcal = estimateMealCalories(item.lunch || '');
+      const lProt = estimateMealProtein(item.lunch || '');
+
       const dKcal = estimateMealCalories(item.dinner || '');
+      const dProt = estimateMealProtein(item.dinner || '');
 
       let extraKcal = 0;
+      let extraProt = 0;
       const coffee = parseInt(item.coffee) || 0;
       extraKcal += (coffee * 25);
       const tea = parseInt(item.tea) || 0;
       extraKcal += (tea * 5);
       if (item.alcohol === 'SI') extraKcal += 250;
-      if (item.supplements && item.supplements.some(s => s.toLowerCase().includes('prote'))) extraKcal += 120;
+      if (item.supplements && item.supplements.some(s => s.toLowerCase().includes('prote'))) {
+        extraKcal += 120;
+        extraProt += 24;
+      }
 
       const total = item.caloriesOverride ? parseInt(item.caloriesOverride) : (bKcal + lKcal + dKcal + extraKcal);
-      return { total, bKcal, lKcal, dKcal, extraKcal };
+      const totalProt = item.proteinOverride ? parseInt(item.proteinOverride) : (bProt + lProt + dProt + extraProt);
+      return { total, totalProt, bKcal, lKcal, dKcal, extraKcal, bProt, lProt, dProt, extraProt };
     }
 
     function updateLiveCalories() {
@@ -1662,7 +1865,8 @@
         tea: fTea.value,
         alcohol: fAlcohol.value,
         supplements: [fSuppProtein.checked ? 'Proteína Whey' : null].filter(Boolean),
-        caloriesOverride: fCaloriesOverride.value
+        caloriesOverride: fCaloriesOverride.value,
+        proteinOverride: fProteinOverride?.value
       });
 
       if (fCaloriesOverride.value) {
@@ -1670,8 +1874,11 @@
       } else {
         displayCaloriesEst.textContent = `~${calcs.total.toLocaleString('es-ES')} kcal`;
       }
+      if (displayProteinEst) {
+        displayProteinEst.textContent = `🥩 ~${calcs.totalProt}g Prot`;
+      }
       if (displayCaloriesBreakdown) {
-        displayCaloriesBreakdown.textContent = `Desayuno: ~${calcs.bKcal} | Comida: ~${calcs.lKcal} | Cena: ~${calcs.dKcal} | Extras: ~${calcs.extraKcal} kcal`;
+        displayCaloriesBreakdown.textContent = `Desayuno: ~${calcs.bKcal}kcal (~${calcs.bProt}g) | Comida: ~${calcs.lKcal}kcal (~${calcs.lProt}g) | Cena: ~${calcs.dKcal}kcal (~${calcs.dProt}g) | Extras: ~${calcs.extraKcal}kcal`;
       }
     }
 
@@ -1706,6 +1913,8 @@
           if (existing.bodyNotes) fBodyNotes.value = existing.bodyNotes;
           if (existing.caloriesOverride) fCaloriesOverride.value = existing.caloriesOverride;
           else fCaloriesOverride.value = '';
+          if (existing.proteinOverride) fProteinOverride.value = existing.proteinOverride;
+          else fProteinOverride.value = '';
           if (existing.lunch) fLunch.value = existing.lunch;
           else fLunch.value = '';
           if (existing.dinner) fDinner.value = existing.dinner;
@@ -1720,6 +1929,7 @@
           fSleepHours.value = '';
           fBodyNotes.value = '';
           fCaloriesOverride.value = '';
+          fProteinOverride.value = '';
           fLunch.value = '';
           fDinner.value = '';
         }
@@ -1748,6 +1958,7 @@
       fAlcohol.value = 'NO';
       btnAlcoholNo.className = 'seg-btn active-no';
       btnAlcoholYes.className = 'seg-btn';
+      updateLiveCalories();
     });
     btnAlcoholYes.addEventListener('click', () => {
       fAlcohol.value = 'SI';
@@ -1756,11 +1967,7 @@
       updateLiveCalories();
     });
 
-    btnAlcoholNo.addEventListener('click', () => {
-      updateLiveCalories();
-    });
-
-    [fBreakfastType, fBreakfastOther, fLunch, fDinner, fCoffee, fTea, fCaloriesOverride].forEach(el => {
+    [fBreakfastType, fBreakfastOther, fLunch, fDinner, fCoffee, fTea, fCaloriesOverride, fProteinOverride].forEach(el => {
       el?.addEventListener('input', updateLiveCalories);
       el?.addEventListener('change', updateLiveCalories);
     });
@@ -1864,7 +2071,8 @@
         tea: fTea.value,
         alcohol: fAlcohol.value,
         supplements: supplements,
-        caloriesOverride: fCaloriesOverride.value
+        caloriesOverride: fCaloriesOverride.value,
+        proteinOverride: fProteinOverride.value
       });
 
       const entry = {
@@ -1874,6 +2082,8 @@
         weight: fWeight.value ? parseFloat(fWeight.value) : null,
         estimatedCalories: calcs.total,
         caloriesOverride: fCaloriesOverride.value ? parseInt(fCaloriesOverride.value) : null,
+        estimatedProtein: calcs.totalProt,
+        proteinOverride: fProteinOverride.value ? parseInt(fProteinOverride.value) : null,
         caloriesBreakdown: calcs,
         sleepHours: fSleepHours.value ? parseFloat(fSleepHours.value) : 7.5,
         sleepQuality: fSleepQuality.value,
@@ -1925,7 +2135,7 @@
         btn.classList.add('active');
         const targetTab = btn.dataset.tab;
         document.querySelectorAll('section[id^="tab-"]').forEach(s => s.hidden = (s.id !== targetTab));
-        if (targetTab === 'tab-stats' || targetTab === 'tab-scouter') renderStats();
+        if (targetTab !== 'tab-form') renderStats();
       });
     });
 
@@ -2032,8 +2242,9 @@
           <div style="font-size:.85rem;color:var(--text);margin-bottom:6px">
             🍽️ <strong>Comida:</strong> ${l.lunch || '—'} <br>
             🌙 <strong>Cena:</strong> ${l.dinner || '—'}
-            <div style="margin-top:3px;font-family:var(--mono);font-size:.76rem;color:var(--amber)">
-              🔥 <strong>Ingesta Calórica:</strong> ~${(l.estimatedCalories || calculateDayCalories(l).total).toLocaleString('es-ES')} kcal ${l.caloriesOverride ? '(manual)' : '(estimada)'}
+            <div style="margin-top:3px;font-family:var(--mono);font-size:.76rem;color:var(--amber);display:flex;gap:12px;flex-wrap:wrap">
+              <span>🔥 <strong>Ingesta:</strong> ~${(l.estimatedCalories || calculateDayCalories(l).total).toLocaleString('es-ES')} kcal</span>
+              <span style="color:#00ff66">🥩 <strong>Proteína:</strong> ~${(l.estimatedProtein || calculateDayCalories(l).totalProt || 0)}g</span>
             </div>
           </div>
           <div style="font-size:.85rem;color:var(--muted);margin-bottom:6px">
@@ -2167,6 +2378,156 @@
         const avgGain = (sumPct / baseExercises.length).toFixed(1);
         const avgBadge = document.getElementById('scouter-avg-gain-badge');
         if (avgBadge) avgBadge.textContent = `Δ MEJORA MEDIA FUERZA: +${avgGain}% [CLASE S]`;
+      }
+
+      // ==========================================
+      // PESTAÑA: BALANCE CALÓRICO & DÉFICIT NETO
+      // ==========================================
+      const TMB = 1920; // Metabolismo basal Dani (1.83m, 96kg)
+      let totalTdeeSum = 0;
+      let totalIngestaSum = 0;
+      let balanceCount = 0;
+
+      const balanceDayList = document.getElementById('balance-day-list');
+      const balanceRows = [];
+
+      logs.forEach(l => {
+        const calData = calculateDayCalories(l);
+        const dayIngesta = l.estimatedCalories ? parseFloat(l.estimatedCalories) : (calData.total || 1850);
+        const dayProt = l.estimatedProtein ? parseFloat(l.estimatedProtein) : (calData.totalProt || 0);
+
+        // Cardio + Paseo
+        const cardioBurn = parseFloat(l.cardioKcal) || 0;
+        const walkBurn = l.walk === 'SI' ? 250 : (l.walk === 'OTRO' ? 150 : 0);
+        const dayTdee = Math.round(TMB + cardioBurn + walkBurn);
+        const dayDeficit = Math.round(dayIngesta - dayTdee); // Negativo = quema neta de grasa
+
+        totalIngestaSum += dayIngesta;
+        totalTdeeSum += dayTdee;
+        balanceCount++;
+
+        const deficitColor = dayDeficit <= 0 ? '#00ff66' : 'var(--accent)';
+        const deficitBg = dayDeficit <= 0 ? 'rgba(0,255,102,0.1)' : 'rgba(255,0,85,0.1)';
+        const deficitBorder = dayDeficit <= 0 ? '#00ff6644' : '#ff005544';
+
+        balanceRows.push(`
+          <div style="background:#050c14;border:1px solid var(--line);border-radius:6px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-family:var(--mono);font-size:.8rem">
+            <div>
+              <strong style="color:var(--text)">${l.date}</strong>
+              <span style="color:var(--muted);font-size:.74rem">(${l.dayName || 'Día'})</span>
+              <span style="margin-left:8px;color:var(--amber)">🔥 Ingesta: ~${Math.round(dayIngesta).toLocaleString('es-ES')} kcal</span>
+              <span style="margin-left:6px;color:#00ff66">🥩 ~${Math.round(dayProt)}g prot</span>
+              <span style="margin-left:8px;color:var(--cyan)">⚡ Gasto: ~${dayTdee.toLocaleString('es-ES')} kcal</span>
+            </div>
+            <div>
+              <span style="background:${deficitBg};border:1px solid ${deficitBorder};color:${deficitColor};font-weight:700;padding:3px 8px;border-radius:4px;font-size:.78rem">
+                ${dayDeficit <= 0 ? '' : '+'}${dayDeficit.toLocaleString('es-ES')} kcal
+              </span>
+            </div>
+          </div>
+        `);
+      });
+
+      if (balanceDayList) {
+        balanceDayList.innerHTML = balanceRows.join('');
+      }
+
+      const avgTdee = balanceCount > 0 ? Math.round(totalTdeeSum / balanceCount) : 2650;
+      const avgBalIngesta = balanceCount > 0 ? Math.round(totalIngestaSum / balanceCount) : 1850;
+      const avgDeficit = avgBalIngesta - avgTdee;
+
+      const elBalIngesta = document.getElementById('bal-ingesta-val');
+      if (elBalIngesta) elBalIngesta.textContent = `~${avgBalIngesta.toLocaleString('es-ES')} kcal`;
+      const elBalTdee = document.getElementById('bal-tdee-val');
+      if (elBalTdee) elBalTdee.textContent = `~${avgTdee.toLocaleString('es-ES')} kcal`;
+      const elBalDeficit = document.getElementById('bal-deficit-val');
+      if (elBalDeficit) {
+        elBalDeficit.textContent = `${avgDeficit <= 0 ? '' : '+'}${avgDeficit.toLocaleString('es-ES')} kcal`;
+        elBalDeficit.style.color = avgDeficit <= 0 ? '#00ff66' : 'var(--accent)';
+      }
+
+      // Proyección a 90 kg
+      const remKg = Math.max(0, latestWeight - 90.0);
+      const absDeficit = Math.abs(avgDeficit) || 750;
+      const etaDays = Math.round((remKg * 7700) / absDeficit);
+      const elBalEta = document.getElementById('bal-eta-days');
+      if (elBalEta) elBalEta.textContent = `Faltan ~${remKg.toFixed(1)} kg (${etaDays} días estimados a 90.0 kg)`;
+      const elBalCurrentWeight = document.getElementById('bal-current-weight');
+      if (elBalCurrentWeight) elBalCurrentWeight.textContent = `${latestWeight.toFixed(1)} kg`;
+      const elBalGoalBar = document.getElementById('bal-goal-bar');
+      if (elBalGoalBar) {
+        const goalPct = Math.min(100, Math.max(0, ((108.0 - latestWeight) / (108.0 - 90.0)) * 100));
+        elBalGoalBar.style.width = `${goalPct.toFixed(1)}%`;
+      }
+
+      // ==========================================
+      // PESTAÑA: SALA DEL TIEMPO // RÉCORDS (PRS)
+      // ==========================================
+      const prs = [
+        { name: 'Prensa de Pierna', pr: 120, unit: 'kg', step: 2.5, date: '05/11/2026', key: 'prensa' },
+        { name: 'Remo con Palanca (discos)', pr: 70, unit: 'kg', step: 2.5, date: '06/11/2026', key: 'palanca' },
+        { name: 'Jalón al Pecho', pr: 70, unit: 'kg', step: 2.5, date: '06/11/2026', key: 'jal' },
+        { name: 'Tracción Vertical Máq.', pr: 80, unit: 'kg', step: 2.5, date: '06/11/2026', key: 'tracci' },
+        { name: 'Extensión Cuádriceps', pr: 60, unit: 'kg', step: 2.5, date: '05/11/2026', key: 'cu' },
+        { name: 'Remo con Polea', pr: 50, unit: 'kg', step: 2.5, date: '06/11/2026', key: 'polea' },
+        { name: 'Remo en T', pr: 40, unit: 'kg', step: 2.5, date: '06/11/2026', key: 'remo en t' },
+        { name: 'Cardio Elíptica (Sesión)', pr: 998, unit: 'kcal', step: 5, date: '03/11/2026', key: 'cardio' },
+        { name: 'Racha 0% Alcohol (Detox)', pr: Math.max(5, streak), unit: 'días', step: 2, date: 'Activa', key: 'alcohol' }
+      ];
+
+      logs.forEach(l => {
+        (l.exercises || []).forEach(ex => {
+          const w = parseFloat(ex.weight);
+          if (w > 0 && ex.name) {
+            const lower = ex.name.toLowerCase();
+            const found = prs.find(p => p.key !== 'cardio' && p.key !== 'alcohol' && lower.includes(p.key));
+            if (found && w > found.pr) {
+              found.pr = w;
+              found.date = l.date;
+            }
+          }
+        });
+        if (l.cardioKcal && parseFloat(l.cardioKcal) > prs[7].pr) {
+          prs[7].pr = parseFloat(l.cardioKcal);
+          prs[7].date = l.date;
+        }
+      });
+
+      const chamberGrid = document.getElementById('chamber-records-grid');
+      if (chamberGrid) {
+        chamberGrid.innerHTML = prs.map(p => {
+          const nextTarget = p.unit === 'kg' ? (p.pr + p.step).toFixed(1) : (p.pr + p.step);
+          return `
+            <div class="scouter-box" style="border-left:3px solid #ffb703;background:#050c14">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <strong style="color:#ffb703;font-size:.85rem">${p.name}</strong>
+                <span style="color:var(--muted);font-size:.7rem">${p.date}</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.4rem;font-weight:900;color:var(--text)">${p.pr}</span>
+                <span style="color:#ffb703;font-weight:700;font-size:.88rem">${p.unit}</span>
+                <span style="color:var(--muted);font-size:.72rem;margin-left:auto">PR ACTUAL</span>
+              </div>
+              <div style="background:rgba(255,183,3,0.08);border:1px dashed #ffb70366;border-radius:4px;padding:6px;font-size:.75rem;color:var(--cyan)">
+                ⚡ <strong>Siguiente Gravedad:</strong> ${nextTarget} ${p.unit} (+${p.step} ${p.unit})
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const todayDayIdx = new Date().getDay();
+      const elChamberToday = document.getElementById('chamber-today-challenge');
+      if (elChamberToday) {
+        if (todayDayIdx === 1 || todayDayIdx === 3) {
+          elChamberToday.innerHTML = `<strong>RUTINA DE PECHO / TRÍCEPS / HOMBRO:</strong> Buscar sobrecarga en <em>Press Plano con Mancuernas</em> (+1 kg por mancuerna) o +2 reps en aperturas inclinadas. ¡Gravedad x10 superada!`;
+        } else if (todayDayIdx === 2 || todayDayIdx === 5) {
+          elChamberToday.innerHTML = `<strong>RUTINA DE ESPALDA / BÍCEPS:</strong> Objetivo superar récord en <em>Remo con Palanca</em> a <strong>72.5 kg</strong> o <em>Jalón al Pecho</em> a <strong>72.5 kg</strong> (+2.5 kg).`;
+        } else if (todayDayIdx === 4) {
+          elChamberToday.innerHTML = `<strong>RUTINA DE PIERNAS:</strong> Romper barrera en <em>Prensa</em> a <strong>122.5 kg</strong> (+2.5 kg) y mantener 62.5 kg en Extensión de Cuádriceps.`;
+        } else {
+          elChamberToday.innerHTML = `<strong>CARDIO & DETOX:</strong> Mantener racha sin alcohol (+1 día) y completar paseo activo de 1h con Ana (+250 kcal de quema neta).`;
+        }
       }
     }
 
@@ -2390,6 +2751,93 @@
     btnClosePwa?.addEventListener('click', () => {
       if (pwaBanner) pwaBanner.hidden = true;
     });
+
+    // --- CÁMARA DE REGENERACIÓN: FOTOS Y MEDIDAS ---
+    function initRegenChamber() {
+      const photoBefore = localStorage.getItem('scouter_photo_before');
+      const photoCurrent = localStorage.getItem('scouter_photo_current');
+      const imgBefore = document.getElementById('regen-img-before');
+      const textBefore = document.getElementById('regen-text-before');
+      const imgCurrent = document.getElementById('regen-img-current');
+      const textCurrent = document.getElementById('regen-text-current');
+
+      if (photoBefore && imgBefore && textBefore) {
+        imgBefore.src = photoBefore;
+        imgBefore.hidden = false;
+        textBefore.hidden = true;
+      }
+      if (photoCurrent && imgCurrent && textCurrent) {
+        imgCurrent.src = photoCurrent;
+        imgCurrent.hidden = false;
+        textCurrent.hidden = true;
+      }
+
+      const dropBefore = document.getElementById('regen-drop-before');
+      const fileBefore = document.getElementById('regen-file-before');
+      dropBefore?.addEventListener('click', () => fileBefore?.click());
+      fileBefore?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const b64 = evt.target.result;
+          localStorage.setItem('scouter_photo_before', b64);
+          if (imgBefore && textBefore) {
+            imgBefore.src = b64;
+            imgBefore.hidden = false;
+            textBefore.hidden = true;
+          }
+          showToast('📸 Foto inicial (108 kg) guardada');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const dropCurrent = document.getElementById('regen-drop-current');
+      const fileCurrent = document.getElementById('regen-file-current');
+      dropCurrent?.addEventListener('click', () => fileCurrent?.click());
+      fileCurrent?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const b64 = evt.target.result;
+          localStorage.setItem('scouter_photo_current', b64);
+          if (imgCurrent && textCurrent) {
+            imgCurrent.src = b64;
+            imgCurrent.hidden = false;
+            textCurrent.hidden = true;
+          }
+          showToast('📸 Foto actual (96 kg) guardada');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const savedMeasures = JSON.parse(localStorage.getItem('scouter_measures') || '{}');
+      const fWaist = document.getElementById('f-measure-waist');
+      const fChest = document.getElementById('f-measure-chest');
+      const fArm = document.getElementById('f-measure-arm');
+      const fThigh = document.getElementById('f-measure-thigh');
+
+      if (fWaist && savedMeasures.waist) fWaist.value = savedMeasures.waist;
+      if (fChest && savedMeasures.chest) fChest.value = savedMeasures.chest;
+      if (fArm && savedMeasures.arm) fArm.value = savedMeasures.arm;
+      if (fThigh && savedMeasures.thigh) fThigh.value = savedMeasures.thigh;
+
+      const btnSaveMeasures = document.getElementById('btn-save-measures');
+      btnSaveMeasures?.addEventListener('click', () => {
+        const measures = {
+          waist: fWaist?.value || '',
+          chest: fChest?.value || '',
+          arm: fArm?.value || '',
+          thigh: fThigh?.value || '',
+          updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem('scouter_measures', JSON.stringify(measures));
+        showToast('📏 Perímetros corporales guardados con éxito');
+      });
+    }
+
+    initRegenChamber();
   </script>
 </body>
 </html>
