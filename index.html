@@ -936,14 +936,20 @@
 
           <div class="grid-2" style="margin-top:10px">
             <div class="field">
-              <label for="f-water">💧 Hidratación Diaria</label>
-              <select id="f-water">
+              <label for="f-water">💧 Hidratación Diaria (<span id="water-live-txt" style="color:var(--cyan);font-weight:700">2.5L</span>)</label>
+              <select id="f-water" style="margin-bottom:6px">
                 <option value="3L+">💧 Óptima (3L o más)</option>
                 <option value="2.5L" selected>💧 Ideal (2.5L)</option>
                 <option value="2.0L">💧 Adecuada (2.0L)</option>
                 <option value="1.5L">💧 Mínima (1.5L)</option>
-                <option value="<1.5L">⚠️ Insuficiente (<1.5L)</option>
+                <option value="<1.5L">⚠️ Insuficiente (&lt;1.5L)</option>
               </select>
+              <div id="water-bottles-row" style="display:flex;gap:4px;flex-wrap:wrap">
+                <button type="button" class="btn-water-quick" data-val="1.5L" style="flex:1;min-width:44px;font-family:var(--mono);font-size:.72rem;padding:5px 2px;background:#05131a;border:1px solid var(--line);color:var(--muted);border-radius:4px;cursor:pointer">🍼 1.5L</button>
+                <button type="button" class="btn-water-quick" data-val="2.0L" style="flex:1;min-width:44px;font-family:var(--mono);font-size:.72rem;padding:5px 2px;background:#05131a;border:1px solid var(--line);color:var(--muted);border-radius:4px;cursor:pointer">🍼 2.0L</button>
+                <button type="button" class="btn-water-quick active-water" data-val="2.5L" style="flex:1;min-width:44px;font-family:var(--mono);font-size:.72rem;padding:5px 2px;background:#00f0ff22;border:1px solid #00f0ff;color:#00f0ff;border-radius:4px;cursor:pointer;font-weight:700">⭐ 2.5L</button>
+                <button type="button" class="btn-water-quick" data-val="3L+" style="flex:1;min-width:44px;font-family:var(--mono);font-size:.72rem;padding:5px 2px;background:#05131a;border:1px solid var(--line);color:var(--muted);border-radius:4px;cursor:pointer">⚡ 3L+</button>
+              </div>
             </div>
             <div class="field">
               <label for="f-body-status">🩺 Estado Físico &amp; Sensaciones</label>
@@ -953,6 +959,23 @@
                 <option value="Molestia articular">⚠️ Molestia articular localizada</option>
                 <option value="Precaución">❌ Dolor / Precaución sesión</option>
               </select>
+            </div>
+          </div>
+
+          <!-- BONUS ZENKAI: ÍNDICE DE RECUPERACIÓN & READYNESS -->
+          <div style="margin-top:14px;background:#080e15;border:1px solid #ff770066;border-left:4px solid #ff7700;border-radius:6px;padding:12px;font-family:var(--mono)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:1.15rem">🔥</span>
+                <strong style="color:#ff7700;font-size:.85rem;letter-spacing:1px">BONUS ZENKAI // ÍNDICE DE RECUPERACIÓN:</strong>
+              </div>
+              <span id="zenkai-score-badge" style="font-weight:900;font-size:1.05rem;color:#00ff66;background:#05131a;padding:2px 8px;border-radius:4px;border:1px solid #00ff6644">90%</span>
+            </div>
+            <div style="height:7px;background:#03080e;border-radius:4px;overflow:hidden;margin-bottom:8px;border:1px solid var(--line)">
+              <div id="zenkai-bar-fill" style="height:100%;width:90%;background:linear-gradient(90deg, #ff7700, #00ff66);transition:width 0.3s"></div>
+            </div>
+            <div id="zenkai-verdict-txt" style="font-size:.78rem;color:var(--text);line-height:1.4">
+              ⚡ <strong>ESTADO SAIYAJIN ÓPTIMO:</strong> Descanso reparador. Tu cuerpo asimilará la sobrecarga pesada sin fatiga. ¡Día perfecto para PRs en la Sala del Tiempo!
             </div>
           </div>
 
@@ -1102,6 +1125,23 @@
             <div class="stat-val" id="stat-calories-avg" style="color:var(--amber)">~1.850 kcal</div>
             <div style="font-size:.72rem;color:var(--muted)">Media nutrición estimada</div>
           </div>
+        </div>
+      </div>
+
+      <!-- NIVELES DE TRANSFORMACIÓN SAIYAJIN POR PESO -->
+      <div class="card card-hud" style="border-color:#ffb70366">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="color:#ffb703;font-size:1.1rem">⚡</span>
+            <span>NIVELES DE TRANSFORMACIÓN SAIYAJIN POR PESO</span>
+          </div>
+          <span style="font-size:.76rem;color:#ffb703;font-family:var(--mono)" id="saiyajin-next-stage-txt">Próxima fase: SSJ1 a 93.0 kg (faltan 3.0 kg)</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">
+          Evolución biomecánica y rangos de poder según la bajada de peso corporal (108.0 kg ➔ 90.0 kg).
+        </div>
+        <div id="saiyajin-transformations-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px">
+          <!-- Tarjetas generadas dinámicamente en renderStats -->
         </div>
       </div>
 
@@ -1995,8 +2035,91 @@
           fDinner.value = '';
         }
         updateLiveCalories();
+        syncWaterUI(fWater.value);
+        updateZenkaiReadiness();
       }
     }
+
+    // --- WIDGET RÁPIDO DE AGUA (BOTELLAS 500ML) ---
+    const waterLiveTxt = document.getElementById('water-live-txt');
+    const waterButtons = document.querySelectorAll('.btn-water-quick');
+
+    function syncWaterUI(val) {
+      if (waterLiveTxt) waterLiveTxt.textContent = val;
+      waterButtons.forEach(b => {
+        const isActive = b.dataset.val === val;
+        b.style.background = isActive ? 'rgba(0, 240, 255, 0.22)' : '#05131a';
+        b.style.borderColor = isActive ? '#00f0ff' : 'var(--line)';
+        b.style.color = isActive ? '#00f0ff' : 'var(--muted)';
+        b.style.fontWeight = isActive ? '700' : '400';
+      });
+    }
+
+    waterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        fWater.value = btn.dataset.val;
+        syncWaterUI(btn.dataset.val);
+        updateZenkaiReadiness();
+      });
+    });
+
+    fWater?.addEventListener('change', () => {
+      syncWaterUI(fWater.value);
+      updateZenkaiReadiness();
+    });
+
+    // --- BONUS ZENKAI: ÍNDICE DE RECUPERACIÓN & READYNESS ---
+    const zenkaiBadge = document.getElementById('zenkai-score-badge');
+    const zenkaiFill = document.getElementById('zenkai-bar-fill');
+    const zenkaiVerdict = document.getElementById('zenkai-verdict-txt');
+
+    function updateZenkaiReadiness() {
+      if (!zenkaiBadge) return;
+      const hours = parseFloat(fSleepHours.value) || 7.5;
+      const quality = parseInt(fSleepQuality.value) || 4;
+      const energy = fEnergy.value || 'Alta';
+      const alc = fAlcohol.value || 'NO';
+      const status = fBodyStatus.value || '100% Operativo';
+
+      const hoursScore = Math.min(35, Math.max(10, Math.round((hours / 8.0) * 35)));
+      const qualityScore = Math.round((quality / 5.0) * 25);
+      let energyScore = 14;
+      if (energy.includes('Androide')) energyScore = 20;
+      else if (energy === 'Alta') energyScore = 17;
+      else if (energy === 'Normal') energyScore = 12;
+      else if (energy === 'Baja') energyScore = 5;
+
+      const alcScore = alc === 'NO' ? 10 : -15;
+
+      let statusScore = 10;
+      if (status.includes('Sobrecarga')) statusScore = 6;
+      else if (status.includes('Molestia')) statusScore = 3;
+      else if (status.includes('Precaución')) statusScore = 0;
+
+      const total = Math.max(15, Math.min(100, hoursScore + qualityScore + energyScore + alcScore + statusScore));
+
+      zenkaiBadge.textContent = `${total}%`;
+      zenkaiFill.style.width = `${total}%`;
+
+      if (total >= 85) {
+        zenkaiBadge.style.color = '#00ff66';
+        zenkaiFill.style.background = 'linear-gradient(90deg, #ffb703, #00ff66)';
+        zenkaiVerdict.innerHTML = `⚡ <strong>ESTADO SAIYAJIN ÓPTIMO (${total}%):</strong> Descanso reparador y bio-energía alta. Tu musculatura responderá al 100% a la sobrecarga pesada. ¡Día perfecto para batir PRs en la Sala del Tiempo!`;
+      } else if (total >= 65) {
+        zenkaiBadge.style.color = '#ffb703';
+        zenkaiFill.style.background = 'linear-gradient(90deg, #ff7700, #ffb703)';
+        zenkaiVerdict.innerHTML = `🔋 <strong>RECUPERACIÓN ESTABLE (${total}%):</strong> Rango adecuado para cumplir series y repeticiones a ritmo constante manteniendo buena técnica.`;
+      } else {
+        zenkaiBadge.style.color = 'var(--accent)';
+        zenkaiFill.style.background = 'linear-gradient(90deg, #550011, #ff0055)';
+        zenkaiVerdict.innerHTML = `⚠️ <strong>RECARGA ZENKAI NECESARIA (${total}%):</strong> Fatiga o deuda de sueño detectada. Prioriza hidratación, paseo activo y evita llegar al fallo muscular hoy.`;
+      }
+    }
+
+    [fSleepHours, fSleepQuality, fEnergy, fBodyStatus].forEach(el => {
+      el?.addEventListener('input', updateZenkaiReadiness);
+      el?.addEventListener('change', updateZenkaiReadiness);
+    });
 
     const todayStr = new Date().toISOString().split('T')[0];
     fDate.value = todayStr;
@@ -2020,12 +2143,14 @@
       btnAlcoholNo.className = 'seg-btn active-no';
       btnAlcoholYes.className = 'seg-btn';
       updateLiveCalories();
+      updateZenkaiReadiness();
     });
     btnAlcoholYes.addEventListener('click', () => {
       fAlcohol.value = 'SI';
       btnAlcoholYes.className = 'seg-btn active-yes';
       btnAlcoholNo.className = 'seg-btn';
       updateLiveCalories();
+      updateZenkaiReadiness();
     });
 
     [fBreakfastType, fBreakfastOther, fLunch, fDinner, fCoffee, fTea, fCaloriesOverride, fProteinOverride].forEach(el => {
@@ -2245,6 +2370,71 @@
       if (elWeightLoss) elWeightLoss.textContent = `-${totalLoss} kg`;
       const elWeightSub = document.getElementById('stat-weight-loss-sub');
       if (elWeightSub) elWeightSub.textContent = `108.0 kg ➔ ${latestWeight.toFixed(1)} kg`;
+
+      // Render Niveles de Transformación Saiyajin
+      const transGrid = document.getElementById('saiyajin-transformations-grid');
+      const nextStageTxt = document.getElementById('saiyajin-next-stage-txt');
+      if (transGrid) {
+        const stages = [
+          { name: 'Estado Base (Gravedad x1)', weight: 108.0, aura: '#6c757d', icon: '🥋', rank: 'FASE 0', desc: 'Punto de partida físico' },
+          { name: 'Entrenamiento Kaio-Sama', weight: 102.0, aura: '#00f0ff', icon: '🐢', rank: 'FASE 1', desc: 'Disciplina y resistencia adquirida' },
+          { name: 'Kaio-Ken x10', weight: 96.0, aura: '#ff0055', icon: '🔥', rank: 'FASE 2', desc: 'Aura Carmesí activa (-12.0 kg)' },
+          { name: 'Super Saiyajin 1', weight: 93.0, aura: '#ffb703', icon: '⚡', rank: 'FASE 3', desc: 'Poder Dorado despertado' },
+          { name: 'Super Saiyajin 2 / Definitivo', weight: 90.0, aura: '#00ff66', icon: '👑', rank: 'FASE FINAL', desc: 'Meta final de recomposición' }
+        ];
+
+        let activeIdx = 0;
+        for (let i = 0; i < stages.length; i++) {
+          if (latestWeight <= stages[i].weight) {
+            activeIdx = i;
+          }
+        }
+
+        const nextStage = stages[Math.min(stages.length - 1, activeIdx + 1)];
+        const remToNext = Math.max(0, latestWeight - nextStage.weight);
+        if (nextStageTxt) {
+          if (latestWeight <= 90.0) {
+            nextStageTxt.innerHTML = '🏆 <strong>¡ESTADO DEFINITIVO ALCANZADO (90.0 KG)!</strong>';
+          } else {
+            nextStageTxt.innerHTML = `Próximo Despertar: <strong>${nextStage.name}</strong> a ${nextStage.weight.toFixed(1)} kg (faltan ~${remToNext.toFixed(1)} kg)`;
+          }
+        }
+
+        transGrid.innerHTML = stages.map((s, idx) => {
+          const isPassed = latestWeight < s.weight && idx < activeIdx;
+          const isCurrent = idx === activeIdx;
+
+          let badgeHtml = '';
+          let borderStyle = `border: 1px solid ${s.aura}44`;
+          let bgStyle = 'background: #050c14';
+
+          if (isCurrent) {
+            badgeHtml = `<span style="background:${s.aura};color:#fff;font-weight:900;padding:2px 8px;border-radius:4px;font-size:.7rem;box-shadow:0 0 10px ${s.aura}">🔥 ESTADO ACTUAL</span>`;
+            borderStyle = `border: 2px solid ${s.aura};box-shadow: 0 0 16px ${s.aura}44`;
+            bgStyle = `background: linear-gradient(180deg, ${s.aura}15 0%, #050c14 100%)`;
+          } else if (isPassed) {
+            badgeHtml = `<span style="background:#00ff6622;color:#00ff66;font-weight:700;padding:2px 6px;border-radius:4px;font-size:.7rem;border:1px solid #00ff6644">✅ SUPERADO</span>`;
+          } else {
+            const diff = (latestWeight - s.weight).toFixed(1);
+            badgeHtml = `<span style="background:#151a22;color:var(--muted);padding:2px 6px;border-radius:4px;font-size:.7rem">🔒 Faltan ${diff} kg</span>`;
+          }
+
+          return `
+            <div style="${bgStyle};${borderStyle};border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:6px;font-family:var(--mono)">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:1.3rem">${s.icon}</span>
+                ${badgeHtml}
+              </div>
+              <strong style="color:${isCurrent ? s.aura : (isPassed ? '#00ff66' : 'var(--text)')};font-size:.86rem;margin-top:2px">${s.name}</strong>
+              <div style="font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between">
+                <span>Objetivo: <strong>${s.weight.toFixed(1)} kg</strong></span>
+                <span style="color:${s.aura}">${s.rank}</span>
+              </div>
+              <div style="font-size:.72rem;color:var(--muted);line-height:1.3;margin-top:2px">${s.desc}</div>
+            </div>
+          `;
+        }).join('');
+      }
 
       // Render Hitos de Peso combinando hitos históricos y nuevos registros
       const weightTimeline = document.getElementById('weight-timeline-container');
