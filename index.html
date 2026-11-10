@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#00ff66">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Scouter DBZ">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <title>Scouter DBZ — Seguimiento Deportivo y Nutricional</title>
+  <style>
+    :root {
+      --bg: #070a0e;
+      --panel: #0d131a;
+      --panel-alt: #121a24;
+      --line: #1c2a38;
+      --accent: #00ff66;
+      --accent-dim: #00ff6633;
+      --cyan: #00f0ff;
+      --cyan-dim: #00f0ff26;
+      --amber: #ffb703;
+      --red: #ff3366;
+      --text: #e2f1f8;
+      --muted: #6e8a9f;
+      --mono: "Share Tech Mono", "Cascadia Code", "Courier New", monospace;
+      --sans: "Inter", system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background-image: 
+        radial-gradient(circle at 50% 0%, #00ff6610 0%, transparent 60%),
+        linear-gradient(rgba(13, 20, 28, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13, 20, 28, 0.4) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    /* CRT scanline overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .wrap {
+      width: min(940px, 94vw);
+      margin: 0 auto;
+      padding: 24px 0 60px;
+      flex: 1;
+    }
+
+    /* Header */
+    header {
+      border: 1px solid var(--accent);
+      background: #090e13;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+      box-shadow: 0 0 20px rgba(0, 255, 102, 0.12), inset 0 0 15px rgba(0, 255, 102, 0.05);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      font-family: var(--mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 1.5s infinite alternate;
+    }
+    @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+
+    .header-meta {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--cyan);
+      letter-spacing: 1px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+    .tab-btn {
+      font-family: var(--mono);
+      background: var(--panel);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+    .tab-btn.active {
+      background: #00ff661a;
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-dim);
+    }
+
+    /* Panels / Cards */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .card-hud {
+      border-color: #243445;
+      position: relative;
+    }
+    .card-hud::before {
+      content: "";
+      position: absolute;
+      top: -1px; left: 16px; width: 32px; height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 6px var(--cyan);
+    }
+    .card-title {
+      font-family: var(--mono);
+      font-size: 0.96rem;
+      color: var(--cyan);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    /* Form grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    label {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    input, select, textarea {
+      font-family: var(--sans);
+      font-size: 0.92rem;
+      background: #090e13;
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 6px;
+      outline: none;
+      transition: border 0.15s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 8px var(--accent-dim);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    /* Routine banner */
+    .routine-banner {
+      background: #0f1c24;
+      border: 1px solid var(--cyan);
+      border-left: 5px solid var(--cyan);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .routine-title {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 1px;
+    }
+    .routine-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Segmented buttons */
+    .seg-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .seg-btn {
+      flex: 1;
+      font-family: var(--mono);
+      padding: 10px;
+      background: #090e13;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .seg-btn.active-no {
+      background: #00ff661a;
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-dim);
+    }
+    .seg-btn.active-yes {
+      background: #ff33661a;
+      border-color: var(--red);
+      color: var(--red);
+      box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
+    }
+
+    /* Optional Exercise Section */
+    .details-toggle {
+      background: transparent;
+      border: 1px dashed var(--cyan);
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 9px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      transition: all 0.15s;
+    }
+    .details-toggle:hover {
+      background: var(--cyan-dim);
+    }
+    .exercise-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.86rem;
+    }
+    .exercise-table th {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-align: left;
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--line);
+    }
+    .exercise-table td {
+      padding: 6px 4px;
+      vertical-align: middle;
+    }
+    .exercise-table input {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+    }
+    .btn-row-del {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--red);
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-row-del:hover {
+      border-color: var(--red);
+    }
+
+    /* File drop area */
+    .drop-zone {
+      border: 2px dashed var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      background: #080c10;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .drop-zone:hover {
+      border-color: var(--cyan);
+      background: #0b1117;
+    }
+    .drop-zone-text {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+    .img-preview {
+      max-width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      border-radius: 6px;
+      margin-top: 10px;
+      border: 1px solid var(--cyan);
+      box-shadow: 0 0 12px var(--cyan-dim);
+    }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #070a0e;
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 0 16px var(--accent-dim);
+      transition: all 0.15s;
+    }
+    .btn-submit:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 24px var(--accent);
+    }
+
+    /* Stats boxes */
+    .stat-boxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      background: #0a1017;
+      border: 1px solid var(--line);
+      padding: 14px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .stat-val {
+      font-family: var(--mono);
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 4px 0;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Weight timeline */
+    .weight-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .weight-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 12px;
+      background: #090e13;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 0.86rem;
+    }
+    .weight-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: #15222e;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .weight-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--accent));
+      border-radius: 4px;
+    }
+
+    .history-card {
+      background: #090e13;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      padding: 14px 16px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .history-card.missed {
+      border-left-color: var(--red);
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 0.86rem;
+      margin-bottom: 8px;
+    }
+
+    /* DBZ Android Scouter Visuals */
+    .scouter-panel {
+      background: #02070d;
+      border: 1.5px solid #00ff66;
+      box-shadow: 0 0 25px rgba(0, 255, 102, 0.15), inset 0 0 20px rgba(0, 255, 102, 0.05);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .scouter-panel::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 2px;
+      background: #00ff66;
+      box-shadow: 0 0 10px #00ff66;
+      animation: scanAnim 3.5s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanAnim {
+      0% { top: 0%; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    .rr-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dc2626;
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #f87171;
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
+    }
+    .scouter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .scouter-card {
+      background: #050c14;
+      border: 1px solid #00ff6666;
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .scouter-card-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #00ff6644;
+      margin-bottom: 12px;
+      background: #000;
+    }
+    .scouter-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.15) brightness(0.95);
+    }
+    .scouter-overlay-target {
+      position: absolute;
+      top: 25%; right: 20%;
+      width: 60px; height: 60px;
+      border: 2px dashed #ffb703;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(255, 183, 3, 0.4);
+      animation: reticleSpin 10s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes reticleSpin { 100% { transform: rotate(360deg); } }
+    .scouter-overlay-target::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 8px; height: 8px;
+      background: #ffb703;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .scouter-callout {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      background: rgba(0, 255, 102, 0.08);
+      border-left: 3px solid #00ff66;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 0 4px 4px 0;
+    }
+    .scouter-callout strong {
+      color: #00ff66;
+      display: block;
+      margin-bottom: 2px;
+      font-size: 0.82rem;
+    }
+    .scouter-formula {
+      font-family: var(--mono);
+      color: #ffb703;
+      font-size: 0.74rem;
+      letter-spacing: 1px;
+    }
+    .scouter-power-meter {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      background: #09130e;
+      border: 1px solid #00ff6688;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .scouter-bp-num {
+      font-family: var(--mono);
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #00ff66;
+      text-shadow: 0 0 14px rgba(0, 255, 102, 0.6);
+      letter-spacing: 2px;
+    }
+    .scouter-bar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+    }
+    .scouter-bar-track {
+      flex: 1;
+      height: 10px;
+      background: #0a171f;
+      border: 1px solid #00ff6633;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .scouter-bar-val {
+      height: 100%;
+      background: linear-gradient(90deg, #00f0ff, #00ff66);
+      box-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+    }
+    .scouter-terminal {
+      background: #03080e;
+      border: 1px solid #00ff6644;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #00ff66;
+      line-height: 1.6;
+      margin-top: 14px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0b141d;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 20px var(--accent-dim);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="header-top">
+        <div class="brand">
+          <div class="brand-dot"></div>
+          <span>SEGUIMIENTO DEPORTIVO &amp; NUTRICIONAL</span>
+        </div>
+        <div class="header-meta" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span>SYS: TELEMETRÍA ANDROIDE DBZ V2.0</span>
+          <button type="button" id="btn-pwa-install" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,255,102,0.25)">📲 INSTALAR EN MÓVIL</button>
+        </div>
+      </div>
+      <div id="pwa-install-banner" hidden style="margin-top:12px;background:#050c14;border:1px solid #00ff66;border-radius:8px;padding:14px;font-family:var(--mono);font-size:.82rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="color:#00ff66;font-size:.9rem">📲 INSTALACIÓN COMO APP EN ANDROID / iOS (PWA RED RIBBON)</strong>
+          <button type="button" id="btn-close-pwa" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem">✕</button>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&color=00ff66&bgcolor=050c14&data=https%3A%2F%2Fcelticmoon17-alt.github.io%2Fscouter-dbz%2F" alt="QR Móvil" style="width:115px;height:115px;border:1px solid #00ff6666;border-radius:6px;padding:4px;background:#050c14">
+          <div style="flex:1;min-width:240px;line-height:1.6;color:var(--text)">
+            <div>1️⃣ <strong>Escanea el QR</strong> con la cámara de tu móvil o abre:<br>
+            <a href="https://celticmoon17-alt.github.io/scouter-dbz/" target="_blank" style="color:var(--cyan);word-break:break-all">https://celticmoon17-alt.github.io/scouter-dbz/</a></div>
+            <div>2️⃣ En Chrome (Android) pulsa el botón <strong style="color:#00ff66">«Instalar ahora»</strong> de abajo o el menú <strong>⋮ ➔ Instalar aplicación</strong>.</div>
+            <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
+              <button type="button" id="btn-trigger-native-install" hidden style="font-family:var(--mono);font-weight:700;padding:6px 14px;background:#00ff66;color:#02070d;border:none;border-radius:4px;cursor:pointer">⚡ INSTALAR AHORA (1 TOQUE)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- NAVEGACIÓN -->
+    <nav class="tabs">
+      <button type="button" class="tab-btn active" data-tab="tab-form">📋 Registro Diario</button>
+      <button type="button" class="tab-btn" data-tab="tab-stats">📊 Telemetría &amp; Stats (<span id="tab-stat-count">0</span>)</button>
+      <button type="button" class="tab-btn" data-tab="tab-scouter">🤖 Scanner Androide DBZ</button>
+    </nav>
+
+    <!-- PESTAÑA 1: FORMULARIO DIARIO -->
+    <section id="tab-form">
+      <form id="daily-form" autocomplete="off">
+        
+        <!-- CABECERA: FECHA Y RUTINA DEL DÍA -->
+        <div class="card card-hud">
+          <div class="card-title">01 // CRONOMETRÍA, PESO &amp; PLANIFICACIÓN</div>
+          <div class="grid-3">
+            <div class="field">
+              <label for="f-date">Fecha de Registro</label>
+              <input type="date" id="f-date" required>
+            </div>
+            <div class="field">
+              <label>Día de la Semana</label>
+              <input type="text" id="f-dayname" readonly style="color:var(--cyan);font-family:var(--mono);font-weight:700">
+            </div>
+            <div class="field">
+              <label for="f-weight">⚖️ Peso Corporal (kg)</label>
+              <input type="number" step="0.1" min="40" max="250" id="f-weight" placeholder="Ej.: 95.8">
+            </div>
+          </div>
+          <div class="routine-banner" id="routine-banner">
+            <div>
+              <div class="routine-title" id="routine-title">CARGANDO PLAN DEL DÍA...</div>
+              <div class="routine-desc" id="routine-desc">Verificando agenda semanal...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NUTRICIÓN -->
+        <div class="card card-hud">
+          <div class="card-title">02 // ALIMENTACIÓN &amp; NUTRICIÓN</div>
+          
+          <div class="field">
+            <label for="f-breakfast-type">Desayuno</label>
+            <select id="f-breakfast-type">
+              <option value="Porridge">🥣 Porridge (Avena + Proteína + Fruta)</option>
+              <option value="Tostadas">🍞 Tostadas (Bimbo Proteína + Cottage Creme)</option>
+              <option value="Otros">📝 Otros (Especificar)</option>
+            </select>
+          </div>
+
+          <div class="field" id="f-breakfast-other-box" hidden>
+            <label for="f-breakfast-other">Especifica el desayuno</label>
+            <input type="text" id="f-breakfast-other" placeholder="Ej.: Huevos revueltos con jamón, fruta variada...">
+          </div>
+
+          <div class="field">
+            <label for="f-lunch">Comida</label>
+            <textarea id="f-lunch" placeholder="Ej.: 300g pollo con brócoli y arroz, salmón a la plancha, lentejas con verdura..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="f-dinner">Cena</label>
+            <textarea id="f-dinner" placeholder="Ej.: 350g ternera con pimienta, quesadilla de pavo y queso, quiché..."></textarea>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px">
+            <div class="field">
+              <label for="f-coffee">☕ Cafés Tomados</label>
+              <select id="f-coffee">
+                <option value="0">0</option>
+                <option value="1" selected>1 café</option>
+                <option value="2">2 cafés</option>
+                <option value="3">3 cafés</option>
+                <option value="4+">4 o más</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-tea">🍵 Tés Tomados</label>
+              <select id="f-tea">
+                <option value="0" selected>0</option>
+                <option value="1">1 té</option>
+                <option value="2">2 tés</option>
+                <option value="3">3 tés</option>
+                <option value="4+">4 o más</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>🍷 Alcohol</label>
+              <div class="seg-btns">
+                <button type="button" class="seg-btn active-no" id="btn-alcohol-no" data-val="NO">NO</button>
+                <button type="button" class="seg-btn" id="btn-alcohol-yes" data-val="SI">SÍ</button>
+              </div>
+              <input type="hidden" id="f-alcohol" value="NO">
+            </div>
+          </div>
+        </div>
+
+        <!-- BIOMETRÍA & RECUPERACIÓN (SUEÑO, ENERGÍA, HIDRATACIÓN, SUPLEMENTOS, ESTADO) -->
+        <div class="card card-hud">
+          <div class="card-title">03 // BIOMETRÍA, RECUPERACIÓN &amp; ESTADO FÍSICO</div>
+          
+          <div class="grid-3">
+            <div class="field">
+              <label for="f-sleep-hours">🛌 Horas de Sueño</label>
+              <input type="number" step="0.5" min="2" max="16" id="f-sleep-hours" placeholder="Ej.: 7.5">
+            </div>
+            <div class="field">
+              <label for="f-sleep-quality">⭐ Calidad del Descanso</label>
+              <select id="f-sleep-quality">
+                <option value="5">⭐⭐⭐⭐⭐ Increíble / Profundo</option>
+                <option value="4" selected>⭐⭐⭐⭐ Bueno / Reparador</option>
+                <option value="3">⭐⭐⭐ Regular / Normal</option>
+                <option value="2">⭐⭐ Inquieto / Ligero</option>
+                <option value="1">⭐ Muy malo / Insomnio</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-energy">⚡ Nivel de Energía Matutino</label>
+              <select id="f-energy">
+                <option value="Modo Androide">🔋⚡ Modo Androide (Máxima)</option>
+                <option value="Alta" selected>⚡ Alta / Despejado</option>
+                <option value="Normal">⚡ Normal / Equilibrada</option>
+                <option value="Baja">⚠️ Baja / Fatiga acumulada</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:10px">
+            <div class="field">
+              <label for="f-water">💧 Hidratación Diaria</label>
+              <select id="f-water">
+                <option value="3L+">💧 Óptima (3L o más)</option>
+                <option value="2.5L" selected>💧 Ideal (2.5L)</option>
+                <option value="2.0L">💧 Adecuada (2.0L)</option>
+                <option value="1.5L">💧 Mínima (1.5L)</option>
+                <option value="<1.5L">⚠️ Insuficiente (<1.5L)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-body-status">🩺 Estado Físico &amp; Sensaciones</label>
+              <select id="f-body-status">
+                <option value="100% Operativo" selected>✅ 100% Operativo / Sin molestias</option>
+                <option value="Sobrecarga leve">⚠️ Sobrecarga muscular leve</option>
+                <option value="Molestia articular">⚠️ Molestia articular localizada</option>
+                <option value="Precaución">❌ Dolor / Precaución sesión</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:10px">
+            <label>💊 Suplementación Tomada Hoy</label>
+            <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;font-family:var(--mono);font-size:0.85rem">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text)">
+                <input type="checkbox" id="f-supp-protein" checked style="accent-color:var(--accent)"> 🥤 Proteína / Whey
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text)">
+                <input type="checkbox" id="f-supp-creatine" checked style="accent-color:var(--accent)"> ⚡ Creatina
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text)">
+                <input type="checkbox" id="f-supp-vitamins" style="accent-color:var(--accent)"> 💊 Multivitamínico / Magnesio
+              </label>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:10px">
+            <label for="f-body-notes">Notas Biométricas / Físicas (opcional)</label>
+            <input type="text" id="f-body-notes" placeholder="Ej.: Buena movilidad, sensación de fuerza alta...">
+          </div>
+        </div>
+
+        <!-- ENTRENAMIENTO -->
+        <div class="card card-hud">
+          <div class="card-title">04 // ENTRENAMIENTO DE FUERZA</div>
+          
+          <div class="field">
+            <label for="f-routine-done">¿Has hecho lo que tocaba hoy?</label>
+            <select id="f-routine-done" style="font-size:1rem;font-weight:700">
+              <option value="SI">✅ SÍ — He completado la sesión programada</option>
+              <option value="NO">❌ NO — No he entrenado / Salto de sesión</option>
+              <option value="ADAPTADO">⚠️ ADAPTADO — He hecho otra sesión / Variación</option>
+            </select>
+          </div>
+
+          <!-- DETALLE OPCIONAL DE SERIES Y REPS -->
+          <button type="button" class="details-toggle" id="btn-toggle-exercises">
+            <span>⚙️ DETALLE DE FUERZA (PESOS, REPETICIONES, SERIES) [OPCIONAL]</span>
+            <span id="toggle-indicator">+ DESPLEGAR</span>
+          </button>
+
+          <div id="exercises-panel" hidden style="margin-top:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-size:.8rem;color:var(--muted)">Introduce los ejercicios de la sesión (opcional):</span>
+              <button type="button" id="btn-load-preset" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#15222e;border:1px solid var(--cyan);color:var(--cyan);border-radius:4px;cursor:pointer">Cargar plantilla del día</button>
+            </div>
+            
+            <table class="exercise-table">
+              <thead>
+                <tr>
+                  <th style="width:45%">Ejercicio</th>
+                  <th style="width:20%">Peso (kg)</th>
+                  <th style="width:15%">Reps</th>
+                  <th style="width:12%">Series</th>
+                  <th style="width:8%"></th>
+                </tr>
+              </thead>
+              <tbody id="exercise-tbody">
+                <!-- Filas dinámicas -->
+              </tbody>
+            </table>
+            
+            <button type="button" id="btn-add-exercise-row" style="margin-top:10px;font-family:var(--mono);font-size:.8rem;padding:6px 12px;background:transparent;border:1px dashed var(--line);color:var(--text);border-radius:4px;cursor:pointer">+ Añadir ejercicio extra</button>
+          </div>
+        </div>
+
+        <!-- CARDIO & PASEO -->
+        <div class="card card-hud">
+          <div class="card-title">05 // CARDIO &amp; ACTIVIDAD</div>
+          
+          <div class="grid-2">
+            <div class="field">
+              <label for="f-walk">🚶 Paseo con Ana (1h aprox.)</label>
+              <select id="f-walk">
+                <option value="SI">✅ SÍ — Paseo completado (~1 hora)</option>
+                <option value="NO" selected>❌ NO — Sin paseo hoy</option>
+                <option value="OTRO">⏱️ Otro tiempo (30-45 min / paseo corto)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-cardio-notes">Tiempo / Notas del Paseo (opcional)</label>
+              <input type="text" id="f-walk-notes" placeholder="Ej.: 1h por el parque a buen ritmo...">
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:10px">
+            <label>📸 Captura Cardio Gym (Elíptica / Máquina)</label>
+            <div class="drop-zone" id="drop-zone">
+              <input type="file" id="f-cardio-file" accept="image/*" style="display:none">
+              <div class="drop-zone-text">Arrastra o pulsa aquí para adjuntar la foto del gym desde el móvil o PC</div>
+              <img id="img-cardio-preview" class="img-preview" src="" alt="Captura cardio" hidden>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTÓN DE ENVÍO -->
+        <button type="submit" class="btn-submit">💾 REGISTRAR TELEMETRÍA EN BITÁCORA</button>
+
+      </form>
+    </section>
+
+    <!-- PESTAÑA 2: TELEMETRÍA & ESTADÍSTICAS -->
+    <section id="tab-stats" hidden>
+      
+      <!-- INDICADORES CLAVE -->
+      <div class="card card-hud">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>TELEMETRÍA &amp; RENDIMIENTO ANDROIDE</span>
+          <button type="button" id="btn-reload-excel" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#0d2218;border:1px solid var(--accent);color:var(--accent);border-radius:4px;cursor:pointer" title="Cargar los datos históricos del Excel">📥 Sincronizar Excel</button>
+        </div>
+        
+        <div class="stat-boxes">
+          <div class="stat-box">
+            <div class="stat-label">Adherencia Rutina</div>
+            <div class="stat-val" id="stat-adherence">87.5%</div>
+            <div style="font-size:.72rem;color:var(--muted)"><span id="stat-adherence-sub">7 / 8</span> días cumplidos</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Racha Sin Alcohol</div>
+            <div class="stat-val" id="stat-alcohol-streak" style="color:var(--cyan)">5 d</div>
+            <div style="font-size:.72rem;color:var(--muted)">Días limpios seguidos</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Pérdida de Peso Total</div>
+            <div class="stat-val" id="stat-weight-loss" style="color:var(--accent)">-12.0 kg</div>
+            <div style="font-size:.72rem;color:var(--muted)">108.0 kg ➔ 96.0 kg</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Cardio en Elíptica</div>
+            <div class="stat-val" id="stat-cardio-kcal" style="color:var(--amber)">2.215 kcal</div>
+            <div style="font-size:.72rem;color:var(--muted)"><span id="stat-cardio-mins">189.9</span> min registrados</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Paseos con Ana</div>
+            <div class="stat-val" id="stat-walks-count" style="color:var(--cyan)">5</div>
+            <div style="font-size:.72rem;color:var(--muted)">Caminatas de 45-60 min</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Descanso &amp; Sueño</div>
+            <div class="stat-val" id="stat-sleep-avg" style="color:#00f0ff">7.5 h</div>
+            <div style="font-size:.72rem;color:var(--muted)">Media horas / noche</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HITOS DE PESO Y EVOLUCIÓN HISTÓRICA -->
+      <div class="card card-hud">
+        <div class="card-title">EVOLUCIÓN DE PESO CORPORAL (HISTÓRICO EXCEL 108 KG ➔ 96 KG)</div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">
+          Evolución del peso corporal (altura: 1,83 m). Datos extraídos del archivo Excel desde el 26 de julio de 2026.
+        </div>
+        <div class="weight-timeline" id="weight-timeline-container">
+          <!-- Hitos de peso -->
+        </div>
+      </div>
+
+      <!-- HISTORIAL DETALLADO DÍA A DÍA -->
+      <div class="card card-hud">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>HISTORIAL DETALLADO DÍA A DÍA (<span id="history-count">0</span> REGISTROS)</span>
+          <button type="button" id="btn-export-json" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#090e13;border:1px solid var(--cyan);color:var(--cyan);border-radius:4px;cursor:pointer">Exportar JSON</button>
+        </div>
+        <div id="history-container">
+          <!-- Historial de días -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: SCANNER ANDROIDE DBZ (DR. GERO // RED RIBBON) -->
+    <section id="tab-scouter" hidden>
+      
+      <!-- CABECERA SCOUTER TERMINAL -->
+      <div class="scouter-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="rr-badge">RR</span>
+            <span style="font-family:var(--mono);color:#00ff66;font-weight:700;letter-spacing:2px;font-size:1.05rem">RED RIBBON // DR. GERO BIOCYBORG SCANNER</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:.76rem;color:#ffb703;letter-spacing:1px">
+            SYS_ID: CYBORG_D17 // FIRMWARE v4.9.2 // STATUS: ACTIVE
+          </div>
+        </div>
+
+        <!-- MEDIDOR DE COMBATE SCOUTER -->
+        <div class="scouter-power-meter">
+          <div>
+            <div style="font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:1px">BATTLE POWER CALCULADO // ADHERENCIA &amp; FUERZA</div>
+            <div class="scouter-bp-num" id="scouter-bp">9,860</div>
+          </div>
+          <div style="margin-left:auto;text-align:right;font-family:var(--mono);font-size:.8rem;color:#00f0ff">
+            <div>SUJETO: <strong style="color:#00ff66">DANI</strong></div>
+            <div>ESTATURA: <strong>1.83 m</strong> | MASA: <strong id="scouter-current-weight">96.0 kg</strong></div>
+            <div style="color:#ffb703">BIO-REDUCCIÓN: <strong id="scouter-loss-stat">-12.0 kg (-11.1%)</strong></div>
+          </div>
+        </div>
+
+        <!-- BLUEPRINTS WIREFRAME HOLOGRÁFICOS (DE LAS CAPTURAS ADJUNTAS) -->
+        <div class="scouter-grid">
+          
+          <!-- HOLOGRÁFICO 1: CRÁNEO Y NÚCLEO NEURAL -->
+          <div class="scouter-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-family:var(--mono);color:#00ff66;font-weight:700;font-size:.85rem">ESQUEMA 01: NÚCLEO NEURAL &amp; CRÁNEO</span>
+              <span class="scouter-formula">P/S1 · NV · ∫ dt = 87.5%</span>
+            </div>
+            
+            <div class="scouter-card-img-wrap">
+              <img src="assets/dbz_android_head.jpg" alt="Android Head Schematic" class="scouter-card-img">
+              <div class="scouter-overlay-target"></div>
+            </div>
+
+            <div class="scouter-callout">
+              <strong>SISTEMA DETOX HEPÁTICO // RED RIBBON</strong>
+              Racha actual: <span style="color:#00f0ff;font-weight:700" id="scouter-detox-days">5 días consecutivos</span> 100% libre de alcohol. Pureza biológica máxima.
+            </div>
+
+            <div class="scouter-callout">
+              <strong>RECUPERACIÓN &amp; ONDAS DE SUEÑO</strong>
+              Media registrada: <span style="color:#00f0ff;font-weight:700" id="scouter-sleep-avg">7.5 h / noche</span>. Sensación de energía matutina óptima.
+            </div>
+
+            <div class="scouter-callout">
+              <strong>NUTRICIÓN &amp; COMBUSTIBLE BIOMECÁNICO</strong>
+              Base habitual: Porridge (avena + proteína + fruta) y Tostadas Proteína con Cottage.
+            </div>
+          </div>
+
+          <!-- HOLOGRÁFICO 2: MALLA WIREFRAME ANATOMÍA 3D -->
+          <div class="scouter-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-family:var(--mono);color:#00ff66;font-weight:700;font-size:.85rem">ESQUEMA 02: MALLA ANATÓMICA WIREFRAME 3D</span>
+              <span class="scouter-formula">Z / A-H2 · [ 73% GOAL ]</span>
+            </div>
+            
+            <div class="scouter-card-img-wrap">
+              <img src="assets/dbz_android_wireframe.jpg" alt="Android Body Wireframe" class="scouter-card-img">
+              <div class="scouter-overlay-target" style="top:40%;right:35%"></div>
+            </div>
+
+            <div class="scouter-callout">
+              <strong>TREN INFERIOR // POTENCIA PIERNA</strong>
+              Prensa máxima: <span style="color:#00f0ff;font-weight:700">120 kg x 10 reps</span> · Extensión cuádriceps: 60 kg · Aductor/Abductor: 60 kg.
+            </div>
+
+            <div class="scouter-callout">
+              <strong>TREN SUPERIOR // TRACCIÓN PULL &amp; EMPUJE PUSH</strong>
+              Jalón dorsal: <span style="color:#00f0ff;font-weight:700">70 kg x 10</span> · Remo palanca discos: <span style="color:#00f0ff;font-weight:700">70 kg</span> · Remo polea: 50 kg.
+            </div>
+
+            <div class="scouter-callout">
+              <strong>GENERADOR CARDIOVASCULAR (ELÍPTICA)</strong>
+              Consumo acumulado: <span style="color:#ffb703;font-weight:700" id="scouter-cardio-total">2.215 kcal</span> · 189.9 min · 145W potencia media · FC 141 ppm.
+            </div>
+          </div>
+
+          <!-- HOLOGRÁFICO 3: REACTOR DE ENERGÍA INFINITA & TORSO CIBERNÉTICO (E-CORE // MK-IV) -->
+          <div class="scouter-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-family:var(--mono);color:#00ff66;font-weight:700;font-size:.85rem">ESQUEMA 03: REACTOR CIBERNÉTICO // E-CORE MK-IV</span>
+              <span class="scouter-formula">∫ Ki dt = MAX · [ OPERATIVO ]</span>
+            </div>
+            
+            <div class="scouter-card-img-wrap">
+              <img src="assets/dbz_android_core.jpg" alt="Android Energy Core Torso" class="scouter-card-img">
+              <div class="scouter-overlay-target" style="top:32%;left:38%"></div>
+            </div>
+
+            <div class="scouter-callout">
+              <strong>NIVEL DE ENERGÍA &amp; RENDIMIENTO VITAL</strong>
+              Estado actual: <span style="color:#00f0ff;font-weight:700" id="scouter-energy-val">⚡ Modo Androide (Máxima)</span>. Reactor de salida Ki sin fugas.
+            </div>
+
+            <div class="scouter-callout">
+              <strong>BALANCE HÍDRICO &amp; REFRIGERACIÓN CORE</strong>
+              Hidratación celular: <span style="color:#00f0ff;font-weight:700" id="scouter-water-val">💧 2.5L / día (Ideal)</span>. Refrigeración térmica óptima.
+            </div>
+
+            <div class="scouter-callout">
+              <strong>SUPLEMENTACIÓN &amp; REPARACIÓN TISULAR</strong>
+              Módulos activos: <span style="color:#ffb703;font-weight:700" id="scouter-supp-val">🥤 Proteína Whey + ⚡ Creatina</span>.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- BARRAS DE RENDIMIENTO TÉCNICO DE SUBSISTEMAS -->
+        <div style="margin-top:18px">
+          <div style="font-family:var(--mono);color:#00f0ff;font-size:.85rem;letter-spacing:1.5px;margin-bottom:12px;border-bottom:1px solid #00ff6644;padding-bottom:6px">
+            DIAGNÓSTICO TELEMÉTRICO DE SUBSISTEMAS CIBERNÉTICOS
+          </div>
+
+          <div class="scouter-bar-row">
+            <span style="width:230px">ENERGÍA REACTOR (CORE VITAL)</span>
+            <div class="scouter-bar-track"><div class="scouter-bar-val" id="scouter-bar-energy" style="width:95%"></div></div>
+            <span style="width:60px;text-align:right;color:#00ff66;font-weight:700" id="scouter-bar-energy-class">CLASE S+</span>
+          </div>
+
+          <div class="scouter-bar-row">
+            <span style="width:230px">DISCIPLINA RUTINA (<span id="scouter-bar-adherence-txt">87.5%</span>)</span>
+            <div class="scouter-bar-track"><div class="scouter-bar-val" id="scouter-bar-adherence" style="width:87.5%"></div></div>
+            <span style="width:60px;text-align:right;color:#00ff66;font-weight:700">CLASE S</span>
+          </div>
+
+          <div class="scouter-bar-row">
+            <span style="width:230px">FUERZA INFERIOR (PRENSA 120 KG)</span>
+            <div class="scouter-bar-track"><div class="scouter-bar-val" style="width:95%"></div></div>
+            <span style="width:60px;text-align:right;color:#00ff66;font-weight:700">CLASE S</span>
+          </div>
+
+          <div class="scouter-bar-row">
+            <span style="width:230px">FUERZA TRACCIÓN (JALÓN 70 KG)</span>
+            <div class="scouter-bar-track"><div class="scouter-bar-val" style="width:90%"></div></div>
+            <span style="width:60px;text-align:right;color:#00ff66;font-weight:700">CLASE A+</span>
+          </div>
+
+          <div class="scouter-bar-row">
+            <span style="width:230px">REACTOR CARDIO (ELÍPTICA 2.2K)</span>
+            <div class="scouter-bar-track"><div class="scouter-bar-val" style="width:88%"></div></div>
+            <span style="width:60px;text-align:right;color:#00ff66;font-weight:700">CLASE A+</span>
+          </div>
+
+          <div class="scouter-bar-row">
+            <span style="width:230px">DETOX ALCOHOL (5 DÍAS 0%)</span>
+            <div class="scouter-bar-track"><div class="scouter-bar-val" id="scouter-bar-alcohol" style="width:100%"></div></div>
+            <span style="width:60px;text-align:right;color:#00ff66;font-weight:700">CLASE S+</span>
+          </div>
+
+          <div class="scouter-bar-row">
+            <span style="width:230px">BIO-PÉRDIDA MASA (-12 KG / 108➔96)</span>
+            <div class="scouter-bar-track"><div class="scouter-bar-val" style="width:75%"></div></div>
+            <span style="width:60px;text-align:right;color:#ffb703;font-weight:700">75% META</span>
+          </div>
+        </div>
+
+        <!-- TERMINAL DE REGISTRO EN VIVO DR. GERO -->
+        <div class="scouter-terminal" id="scouter-terminal">
+          &gt; INICIANDO DIAGNÓSTICO BIOMÉTRICO DR. GERO // RED RIBBON COMPUTER v4.9<br>
+          &gt; SUJETO ESCANEADO: DANI (CYBORG MODEL D-17) // ESTATURA: 1.83 m<br>
+          &gt; ANÁLISIS DE RESISTENCIA: ADHERENCIA EN EL 87.5% // 7 DE 8 PROTOCOLOS CUMPLIDOS<br>
+          &gt; DATOS DESTRUCTIVOS CONFIRMADOS: PRENSA DE PIERNA 120 KG // JALÓN AL PECHO 70 KG // REMO 70 KG<br>
+          &gt; RENDIMIENTO CARDIOVASCULAR OPTIMIZADO: 2.215 KCAL QUEMADAS EN MÁQUINA TECHNOGYM SYNCHRO EXCITE<br>
+          &gt; SISTEMA DE PURIFICACIÓN: 5 DÍAS CONSECUTIVOS LIBRE DE ALCOHOL // RITMO METABÓLICO EN ASCENSO<br>
+          &gt; CONCLUSIÓN DEL SISTEMA: BIOLOGÍA MEJORADA. OBJETIVO DE 90 KG EN RANGO OPERATIVO.
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <div id="toast" class="toast">DATOS REGISTRADOS CORRECTAMENTE</div>
+
+  <script>
+    // --- RUTINA SEMANAL OFICIAL DEL USUARIO ---
+    const WEEKLY_SCHEDULE = {
+      1: { name: "🦵 Lunes: DÍA DE PIERNA", desc: "Prensa, Extensión de cuádriceps, Aductor, Abductor y femoral.", exercises: ["Prensa", "Extensión de cuádriceps", "Aductor", "Abductor"] },
+      2: { name: "💥 Martes: PUSH", desc: "Pecho, Hombro y Tríceps (Press de pecho, militar, extensiones polea).", exercises: ["Press de pecho", "Press inclinado", "Elevaciones laterales", "Extensión de tríceps en polea"] },
+      3: { name: "🚶 Miércoles: DESCANSO ACTIVO", desc: "Paseo largo con Ana y recuperación articular.", exercises: [] },
+      4: { name: "🦵 Jueves: DÍA DE PIERNA", desc: "Prensa, Extensión de cuádriceps, Aductor, Abductor.", exercises: ["Prensa", "Extensión de cuádriceps", "Aductor", "Abductor"] },
+      5: { name: "🎯 Viernes: PULL", desc: "Espalda y Bíceps (Jalón al pecho, Remos, Tracción vertical, Bíceps).", exercises: ["Jalón al pecho", "Remo con polea", "Remo en T", "Remo con palanca (discos)", "Tracción vertical máquina"] },
+      6: { name: "🚶 Sábado: DESCANSO ACTIVO", desc: "Paseo con Ana y movilidad.", exercises: [] },
+      0: { name: "⚡ Domingo: CIRCUITO DE TORSO", desc: "Circuito de torso (sin pierna) + Cardio de elíptica.", exercises: ["Circuito Torso Máquinas", "Remo", "Press pecho", "Jalón"] }
+    };
+
+    const DAYS_ES = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+    // --- DATOS SEED HISTÓRICOS DEL ARCHIVO EXCEL ---
+    const EXCEL_SEED_LOGS = [
+      {
+        id: "log-2026-11-06",
+        date: "2026-11-06",
+        dayName: "Viernes",
+        weight: 96.0,
+        sleep: 8,
+        energy: "5/10",
+        breakfast: "Porridge / Tostadas",
+        lunch: "Alimentación equilibrada",
+        dinner: "Cena ligera",
+        coffee: "1",
+        tea: "0",
+        alcohol: "NO",
+        routineDone: "SI",
+        routinePlan: "PULL (Espalda + Bíceps)",
+        walk: "SI",
+        walkNotes: "Caminata de 60 min",
+        cardioMinutes: 52.7,
+        cardioKm: 2.16,
+        cardioKcal: 689,
+        cardioDetails: "Elíptica 52:40, 2.16 km, 689 kcal, 121 W medios, FC media 138 ppm, FC máx 156 ppm, 1.094 movimientos.",
+        exercises: [
+          { name: "Jalón al pecho", weight: 70, reps: "10", sets: "3 (50, 60, 70 kg)" },
+          { name: "Remo", weight: 45, reps: "10", sets: "3 (35, 40, 45 kg)" },
+          { name: "Remo con palanca", weight: 70, reps: "10", sets: "4 (50, 60, 70, 70 kg)" },
+          { name: "Remo en T", weight: 35, reps: "10", sets: "3 (20, 30, 35 kg)" }
+        ],
+        notes: "Energía 5/10. Recuperación normal. Sensaciones al terminar fuerza: normal. Cardio elíptica 52:40."
+      },
+      {
+        id: "log-2026-11-05",
+        date: "2026-11-05",
+        dayName: "Jueves",
+        weight: 96.8,
+        sleep: 7,
+        energy: "5/10",
+        breakfast: "Porridge",
+        lunch: "Filete de salmón con verdura",
+        dinner: "Quesadilla de pavo y queso",
+        coffee: "1",
+        tea: "0",
+        alcohol: "NO",
+        routineDone: "SI",
+        routinePlan: "Pierna",
+        walk: "OTRO",
+        walkNotes: "Caminata 20 min",
+        cardioMinutes: 0,
+        cardioKm: 0,
+        cardioKcal: 0,
+        cardioDetails: "Sin cardio",
+        exercises: [
+          { name: "Prensa", weight: 120, reps: "10", sets: "3 (80, 100, 120 kg)" }
+        ],
+        notes: "Calidad del sueño regular. Sin merienda. Cena quesadilla de pavo y queso."
+      },
+      {
+        id: "log-2026-11-04",
+        date: "2026-11-04",
+        dayName: "Miércoles",
+        weight: 96.2,
+        sleep: 7.5,
+        energy: "Normal",
+        breakfast: "Tostadas (3 pan Bimbo Protein, Cottage Mercadona, pechuga Aldi 93%, café eritritol y té Barry's)",
+        lunch: "Lentejas con verduras, patata y poco chorizo",
+        dinner: "Quiché de cebolla y tomate",
+        coffee: "1",
+        tea: "1",
+        alcohol: "NO",
+        routineDone: "SI",
+        routinePlan: "Descanso Activo",
+        walk: "SI",
+        walkNotes: "Paseo con Ana",
+        cardioMinutes: 0,
+        cardioKm: 0,
+        cardioKcal: 0,
+        cardioDetails: "Paseo con Ana",
+        exercises: [],
+        notes: "Descanso activo; paseo con Ana. Desayuno proteico completo."
+      },
+      {
+        id: "log-2026-11-03",
+        date: "2026-11-03",
+        dayName: "Martes",
+        weight: 96.8,
+        sleep: 8,
+        energy: "Muchísima (increíble)",
+        breakfast: "Café solo con eritritol",
+        lunch: "300g pollo con brócoli (+ café con leche y 1 scoop proteína)",
+        dinner: "100g maíz en Lékué con poco aceite",
+        coffee: "2",
+        tea: "0",
+        alcohol: "NO",
+        routineDone: "SI",
+        routinePlan: "PUSH (Pecho, Hombro, Tríceps)",
+        walk: "SI",
+        walkNotes: "Paseo con Ana 45 min",
+        cardioMinutes: 68.6,
+        cardioKm: 3.14,
+        cardioKcal: 998,
+        cardioDetails: "Elíptica Technogym Synchro Excite 700: 1:08:38, 3.14 km, 998 kcal, 145 W medios, FC media 143 ppm, FC máx 171 ppm, 1584 movimientos.",
+        exercises: [
+          { name: "Fuerza PUSH: Pecho, Hombro, Tríceps", weight: 0, reps: "Varias", sets: "Completa demandante" }
+        ],
+        notes: "Descanso descrito como increíble. Paseo con Ana 45 min. Cardio elíptica 68 min y casi 1000 kcal quemadas."
+      },
+      {
+        id: "log-2026-11-02",
+        date: "2026-11-02",
+        dayName: "Lunes",
+        weight: 96.0,
+        sleep: 8,
+        energy: "Buena",
+        breakfast: "Porridge habitual",
+        lunch: "Comida saludable",
+        dinner: "Cena ligera",
+        coffee: "1",
+        tea: "0",
+        alcohol: "NO",
+        routineDone: "SI",
+        routinePlan: "Pierna",
+        walk: "SI",
+        walkNotes: "Caminata 45 min",
+        cardioMinutes: 30,
+        cardioKm: 0,
+        cardioKcal: 0,
+        cardioDetails: "Cardio en elíptica",
+        exercises: [
+          { name: "Entrenamiento habitual de pierna", weight: 0, reps: "10", sets: "4 ejercicios" }
+        ],
+        notes: "Sesión de pierna completada. Calidad de sueño buena (8 h). Elíptica y caminata de 45 min."
+      },
+      {
+        id: "log-2026-11-01",
+        date: "2026-11-01",
+        dayName: "Domingo",
+        weight: 96.5,
+        sleep: 6,
+        energy: "Baja",
+        breakfast: "Libre",
+        lunch: "Comida libre no saludable",
+        dinner: "Cena libre",
+        coffee: "1",
+        tea: "0",
+        alcohol: "SI",
+        routineDone: "NO",
+        routinePlan: "Circuito de Torso",
+        walk: "NO",
+        walkNotes: "Sin caminata",
+        cardioMinutes: 0,
+        cardioKm: 0,
+        cardioKcal: 0,
+        cardioDetails: "Sin cardio",
+        exercises: [],
+        notes: "Día de descanso/libre, comida no saludable y consumo puntual de alcohol. Sin entrenamiento ni cardio."
+      },
+      {
+        id: "log-2026-10-31",
+        date: "2026-10-31",
+        dayName: "Sábado",
+        weight: 95.5,
+        sleep: 7,
+        energy: "A tope",
+        breakfast: "Porridge + Tostadas (51g avena, 1/2 scoop prote, 200g leche, 2 tostadas Bimbo Proteína con Cottage)",
+        lunch: "Alimentación controlada",
+        dinner: "Cena ligera",
+        coffee: "1",
+        tea: "0",
+        alcohol: "NO",
+        routineDone: "SI",
+        routinePlan: "Descanso Activo",
+        walk: "SI",
+        walkNotes: "Paseo largo con Ana",
+        cardioMinutes: 0,
+        cardioKm: 0,
+        cardioKcal: 0,
+        cardioDetails: "Sin gimnasio / Descanso activo",
+        exercises: [],
+        notes: "Sueño bueno y sin interrupciones. Energía a tope. Paseo largo, descanso activo cumplido."
+      },
+      {
+        id: "log-2026-10-30",
+        date: "2026-10-30",
+        dayName: "Viernes",
+        weight: 95.4,
+        sleep: 6,
+        energy: "Buena tras café",
+        breakfast: "Porridge (100g avena, 1 scoop proteína, plátano y pepitas chocolate)",
+        lunch: "Comida limpia",
+        dinner: "350g ternera con pimienta sin verduras",
+        coffee: "1",
+        tea: "0",
+        alcohol: "NO",
+        routineDone: "SI",
+        routinePlan: "PULL (Espalda + Bíceps)",
+        walk: "NO",
+        walkNotes: "",
+        cardioMinutes: 38.6,
+        cardioKm: 1.43,
+        cardioKcal: 528,
+        cardioDetails: "Elíptica 38:34, 1.43 km, 131 W medios, FC media 141 ppm, FC máx 166 ppm, 528 kcal.",
+        exercises: [
+          { name: "Remo con polea", weight: 50, reps: "10", sets: "4 (40, 45, 50, 45 kg)" },
+          { name: "Jalón al pecho", weight: 70, reps: "9", sets: "3 (50, 60, 70 kg)" },
+          { name: "Remo en T", weight: 40, reps: "10", sets: "4 (20, 30, 40, 30 kg)" },
+          { name: "Remo con palanca (discos)", weight: 50, reps: "10", sets: "3 (40, 50, 40 kg)" },
+          { name: "Tracción vertical máquina", weight: 80, reps: "10", sets: "3 (60, 70, 80 kg)" }
+        ],
+        notes: "Sueño malo pero energía buena tras café. Sesión de espalda completa y 38:34 de elíptica."
+      }
+    ];
+
+    const WEIGHT_MILESTONES = [
+      { date: "2026-07-26", weight: 108.0, note: "Punto de partida (1.83 m)" },
+      { date: "2026-08-05", weight: 104.7, note: "Cinta 1.5h viendo Rick & Morty" },
+      { date: "2026-08-28", weight: 102.0, note: "Rutina combinada cardio + pesas" },
+      { date: "2026-09-04", weight: 100.2, note: "Cruzando la barrera de los 100 kg" },
+      { date: "2026-09-11", weight: 99.4, note: "Consolidación dos dígitos" },
+      { date: "2026-10-30", weight: 95.4, note: "Mínimo histórico registrado (-12.6 kg)" },
+      { date: "2026-11-06", weight: 96.0, note: "Peso actual consolidado" }
+    ];
+
+    // --- ALMACENAMIENTO LOCAL (CON MEZCLA AUTOMÁTICA DEL EXCEL) ---
+    const STORAGE_KEY = "seguimiento_deportivo_v1";
+
+    function loadLogs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const stored = raw ? JSON.parse(raw) : [];
+        const map = new Map();
+        // 1. Cargar base de datos histórica completa del Excel
+        EXCEL_SEED_LOGS.forEach(l => map.set(l.date, l));
+        // 2. Superponer cualquier registro nuevo o editado por el usuario
+        stored.forEach(l => {
+          if (map.has(l.date)) {
+            map.set(l.date, { ...map.get(l.date), ...l });
+          } else {
+            map.set(l.date, l);
+          }
+        });
+        const merged = Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
+        // Guardar la unión completa para persistencia
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        return merged;
+      } catch (e) {
+        return EXCEL_SEED_LOGS;
+      }
+    }
+
+    function saveLogs(logs) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+    }
+
+    // --- ELEMENTOS DOM ---
+    const fDate = document.getElementById('f-date');
+    const fDayname = document.getElementById('f-dayname');
+    const fWeight = document.getElementById('f-weight');
+    const routineTitle = document.getElementById('routine-title');
+    const routineDesc = document.getElementById('routine-desc');
+    const fBreakfastType = document.getElementById('f-breakfast-type');
+    const fBreakfastOtherBox = document.getElementById('f-breakfast-other-box');
+    const fBreakfastOther = document.getElementById('f-breakfast-other');
+    const fLunch = document.getElementById('f-lunch');
+    const fDinner = document.getElementById('f-dinner');
+    const fCoffee = document.getElementById('f-coffee');
+    const fTea = document.getElementById('f-tea');
+    const fAlcohol = document.getElementById('f-alcohol');
+    const btnAlcoholNo = document.getElementById('btn-alcohol-no');
+    const btnAlcoholYes = document.getElementById('btn-alcohol-yes');
+
+    // Biometría y recuperación
+    const fSleepHours = document.getElementById('f-sleep-hours');
+    const fSleepQuality = document.getElementById('f-sleep-quality');
+    const fEnergy = document.getElementById('f-energy');
+    const fWater = document.getElementById('f-water');
+    const fSuppProtein = document.getElementById('f-supp-protein');
+    const fSuppCreatine = document.getElementById('f-supp-creatine');
+    const fSuppVitamins = document.getElementById('f-supp-vitamins');
+    const fBodyStatus = document.getElementById('f-body-status');
+    const fBodyNotes = document.getElementById('f-body-notes');
+
+    const fRoutineDone = document.getElementById('f-routine-done');
+    const btnToggleExercises = document.getElementById('btn-toggle-exercises');
+    const exercisesPanel = document.getElementById('exercises-panel');
+    const toggleIndicator = document.getElementById('toggle-indicator');
+    const exerciseTbody = document.getElementById('exercise-tbody');
+    const btnLoadPreset = document.getElementById('btn-load-preset');
+    const btnAddExerciseRow = document.getElementById('btn-add-exercise-row');
+    const fWalk = document.getElementById('f-walk');
+    const fWalkNotes = document.getElementById('f-walk-notes');
+    const dropZone = document.getElementById('drop-zone');
+    const fCardioFile = document.getElementById('f-cardio-file');
+    const imgCardioPreview = document.getElementById('img-cardio-preview');
+    const dailyForm = document.getElementById('daily-form');
+    const toast = document.getElementById('toast');
+    const btnReloadExcel = document.getElementById('btn-reload-excel');
+
+    let currentCardioBase64 = '';
+
+    // --- TOAST NOTIFICATION ---
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // --- INICIALIZAR FECHA Y RUTINA ---
+    function updateDateRoutine() {
+      const parts = fDate.value.split('-');
+      if (parts.length === 3) {
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        const dayIdx = d.getDay();
+        fDayname.value = DAYS_ES[dayIdx].toUpperCase();
+        const sched = WEEKLY_SCHEDULE[dayIdx];
+        routineTitle.textContent = sched.name;
+        routineDesc.textContent = sched.desc;
+
+        // Si ya hay un registro guardado para esta fecha, precargar campos clave
+        const logs = loadLogs();
+        const existing = logs.find(x => x.date === fDate.value);
+        if (existing) {
+          if (existing.weight) fWeight.value = existing.weight;
+          if (existing.sleepHours || existing.sleep) fSleepHours.value = existing.sleepHours || existing.sleep;
+          if (existing.sleepQuality) fSleepQuality.value = existing.sleepQuality;
+          if (existing.energy) fEnergy.value = existing.energy;
+          if (existing.water) fWater.value = existing.water;
+          if (existing.bodyStatus) fBodyStatus.value = existing.bodyStatus;
+          if (existing.bodyNotes) fBodyNotes.value = existing.bodyNotes;
+          if (existing.supplements) {
+            fSuppProtein.checked = existing.supplements.some(s => s.toLowerCase().includes('prote'));
+            fSuppCreatine.checked = existing.supplements.some(s => s.toLowerCase().includes('creatin'));
+            fSuppVitamins.checked = existing.supplements.some(s => s.toLowerCase().includes('vitam') || s.toLowerCase().includes('magnes'));
+          }
+        } else {
+          fWeight.value = '';
+          fSleepHours.value = '';
+          fBodyNotes.value = '';
+        }
+      }
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    fDate.value = todayStr;
+    updateDateRoutine();
+    fDate.addEventListener('change', updateDateRoutine);
+
+    // --- DESAYUNO: CONTROL OTROS ---
+    fBreakfastType.addEventListener('change', () => {
+      if (fBreakfastType.value === 'Otros') {
+        fBreakfastOtherBox.hidden = false;
+        fBreakfastOther.required = true;
+      } else {
+        fBreakfastOtherBox.hidden = true;
+        fBreakfastOther.required = false;
+      }
+    });
+
+    // --- BOTONES ALCOHOL ---
+    btnAlcoholNo.addEventListener('click', () => {
+      fAlcohol.value = 'NO';
+      btnAlcoholNo.className = 'seg-btn active-no';
+      btnAlcoholYes.className = 'seg-btn';
+    });
+    btnAlcoholYes.addEventListener('click', () => {
+      fAlcohol.value = 'SI';
+      btnAlcoholYes.className = 'seg-btn active-yes';
+      btnAlcoholNo.className = 'seg-btn';
+    });
+
+    // --- TOGGLE EJERCICIOS DETALLADOS ---
+    btnToggleExercises.addEventListener('click', () => {
+      const isHidden = exercisesPanel.hidden;
+      exercisesPanel.hidden = !isHidden;
+      toggleIndicator.textContent = isHidden ? '− PLEGAR' : '+ DESPLEGAR';
+      if (isHidden && exerciseTbody.children.length === 0) {
+        loadPresetForDay();
+      }
+    });
+
+    // --- FILAS DE EJERCICIOS ---
+    function addExerciseRow(name = '', weight = '', reps = '', sets = '') {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" class="ex-name" value="${name}" placeholder="Ejercicio"></td>
+        <td><input type="number" step="0.5" class="ex-weight" value="${weight}" placeholder="kg"></td>
+        <td><input type="text" class="ex-reps" value="${reps}" placeholder="10"></td>
+        <td><input type="text" class="ex-sets" value="${sets}" placeholder="3-4"></td>
+        <td><button type="button" class="btn-row-del" title="Eliminar fila">✕</button></td>
+      `;
+      tr.querySelector('.btn-row-del').addEventListener('click', () => tr.remove());
+      exerciseTbody.appendChild(tr);
+    }
+
+    function loadPresetForDay() {
+      exerciseTbody.innerHTML = '';
+      const parts = fDate.value.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      const sched = WEEKLY_SCHEDULE[d.getDay()];
+      if (sched && sched.exercises.length > 0) {
+        sched.exercises.forEach(ex => addExerciseRow(ex, '', '10', '3'));
+      } else {
+        addExerciseRow('Descanso activo / Caminata', '', '', '');
+      }
+    }
+
+    btnLoadPreset.addEventListener('click', loadPresetForDay);
+    btnAddExerciseRow.addEventListener('click', () => addExerciseRow());
+
+    // --- CAPTURA CARDIO ---
+    dropZone.addEventListener('click', () => fCardioFile.click());
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent)'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = 'var(--line)'; });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = 'var(--line)';
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        processImage(e.dataTransfer.files[0]);
+      }
+    });
+    fCardioFile.addEventListener('change', () => {
+      if (fCardioFile.files && fCardioFile.files[0]) {
+        processImage(fCardioFile.files[0]);
+      }
+    });
+
+    function processImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentCardioBase64 = e.target.result;
+        imgCardioPreview.src = currentCardioBase64;
+        imgCardioPreview.hidden = false;
+        dropZone.querySelector('.drop-zone-text').textContent = `Captura cargada: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // --- GUARDAR REGISTRO ---
+    dailyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const exercises = [];
+      exerciseTbody.querySelectorAll('tr').forEach(tr => {
+        const name = tr.querySelector('.ex-name')?.value.trim();
+        if (name) {
+          exercises.push({
+            name,
+            weight: tr.querySelector('.ex-weight')?.value || '',
+            reps: tr.querySelector('.ex-reps')?.value || '',
+            sets: tr.querySelector('.ex-sets')?.value || ''
+          });
+        }
+      });
+
+      const supplements = [];
+      if (fSuppProtein.checked) supplements.push('Proteína Whey');
+      if (fSuppCreatine.checked) supplements.push('Creatina');
+      if (fSuppVitamins.checked) supplements.push('Multivitamínico / Magnesio');
+
+      const entry = {
+        id: crypto.randomUUID(),
+        date: fDate.value,
+        dayName: fDayname.value,
+        weight: fWeight.value ? parseFloat(fWeight.value) : null,
+        sleepHours: fSleepHours.value ? parseFloat(fSleepHours.value) : 7.5,
+        sleepQuality: fSleepQuality.value,
+        energy: fEnergy.value,
+        water: fWater.value,
+        supplements: supplements,
+        bodyStatus: fBodyStatus.value,
+        bodyNotes: fBodyNotes.value.trim(),
+        breakfast: fBreakfastType.value === 'Otros' ? `Otros: ${fBreakfastOther.value.trim()}` : fBreakfastType.value,
+        lunch: fLunch.value.trim(),
+        dinner: fDinner.value.trim(),
+        coffee: fCoffee.value,
+        tea: fTea.value,
+        alcohol: fAlcohol.value,
+        routineDone: fRoutineDone.value,
+        routinePlan: routineTitle.textContent,
+        exercises: exercises,
+        walk: fWalk.value,
+        walkNotes: fWalkNotes.value.trim(),
+        cardioImage: currentCardioBase64,
+        createdAt: new Date().toISOString()
+      };
+
+      const logs = loadLogs();
+      const existingIdx = logs.findIndex(x => x.date === entry.date);
+      if (existingIdx >= 0) {
+        logs[existingIdx] = entry;
+      } else {
+        logs.unshift(entry);
+      }
+      saveLogs(logs);
+
+      showToast(`✅ TELEMETRÍA DEL ${entry.date} GRABADA CON ÉXITO`);
+      renderStats();
+    });
+
+    // --- RECARGAR DATOS DEL EXCEL ---
+    btnReloadExcel?.addEventListener('click', () => {
+      saveLogs(EXCEL_SEED_LOGS);
+      showToast('📥 Datos del Excel sincronizados con éxito');
+      renderStats();
+    });
+
+    // --- PESTAÑAS ---
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const targetTab = btn.dataset.tab;
+        document.querySelectorAll('section[id^="tab-"]').forEach(s => s.hidden = (s.id !== targetTab));
+        if (targetTab === 'tab-stats' || targetTab === 'tab-scouter') renderStats();
+      });
+    });
+
+    // --- RENDERIZAR TELEMETRÍA Y ESTADÍSTICAS ---
+    function renderStats() {
+      const logs = loadLogs();
+      const total = logs.length;
+      document.getElementById('tab-stat-count').textContent = total;
+      document.getElementById('history-count').textContent = total;
+
+      if (total === 0) return;
+
+      // Adherencia
+      const doneCount = logs.filter(l => l.routineDone === 'SI').length;
+      const adherence = Math.round((doneCount / total) * 100);
+      document.getElementById('stat-adherence').textContent = `${adherence}%`;
+      document.getElementById('stat-adherence-sub').textContent = `${doneCount} / ${total}`;
+
+      // Racha sin alcohol
+      let streak = 0;
+      for (const log of logs) {
+        if (log.alcohol === 'NO') streak++;
+        else break;
+      }
+      document.getElementById('stat-alcohol-streak').textContent = `${streak} d`;
+
+      // Paseos con Ana
+      const walks = logs.filter(l => l.walk === 'SI' || l.walk === 'OTRO').length;
+      document.getElementById('stat-walks-count').textContent = walks;
+
+      // Cardio Kcal & Minutos acumulados
+      let totalCardioKcal = 0;
+      let totalCardioMins = 0;
+      logs.forEach(l => {
+        totalCardioKcal += (l.cardioKcal || 0);
+        totalCardioMins += (l.cardioMinutes || 0);
+      });
+      document.getElementById('stat-cardio-kcal').textContent = `${Math.round(totalCardioKcal).toLocaleString('es-ES')} kcal`;
+      document.getElementById('stat-cardio-mins').textContent = `${Math.round(totalCardioMins)}`;
+
+      // Pérdida de peso calculada con el último registro disponible
+      const logsWithWeight = logs.filter(l => l.weight > 0);
+      const latestWeight = logsWithWeight.length > 0 ? parseFloat(logsWithWeight[0].weight) : 96.0;
+      const totalLoss = (108.0 - latestWeight).toFixed(1);
+      const elWeightLoss = document.getElementById('stat-weight-loss');
+      if (elWeightLoss) elWeightLoss.textContent = `-${totalLoss} kg`;
+      const elWeightSub = document.getElementById('stat-weight-loss-sub');
+      if (elWeightSub) elWeightSub.textContent = `108.0 kg ➔ ${latestWeight.toFixed(1)} kg`;
+
+      // Render Hitos de Peso combinando hitos históricos y nuevos registros
+      const weightTimeline = document.getElementById('weight-timeline-container');
+      if (weightTimeline) {
+        const combinedMilestones = [...WEIGHT_MILESTONES];
+        logs.forEach(l => {
+          if (l.weight > 0 && !combinedMilestones.some(m => m.date === l.date)) {
+            combinedMilestones.push({
+              date: l.date,
+              weight: parseFloat(l.weight),
+              note: `Registro diario (${l.routinePlan || 'Sesión'})`
+            });
+          }
+        });
+        combinedMilestones.sort((a, b) => a.date.localeCompare(b.date));
+
+        weightTimeline.innerHTML = combinedMilestones.map(m => {
+          const lossSoFar = (108.0 - m.weight).toFixed(1);
+          const pct = Math.min(100, Math.max(5, Math.round(((108.0 - m.weight) / 18.0) * 100)));
+          return `
+            <div class="weight-row">
+              <span style="font-family:var(--mono);color:var(--accent);font-weight:700;width:90px">📅 ${m.date}</span>
+              <div class="weight-bar-bg">
+                <div class="weight-bar-fill" style="width:${pct}%"></div>
+              </div>
+              <span style="font-family:var(--mono);font-weight:700;color:var(--text);width:75px;text-align:right">${m.weight.toFixed(1)} kg</span>
+              <span style="font-family:var(--mono);color:var(--cyan);font-size:.76rem;width:80px;text-align:right">-${lossSoFar} kg</span>
+              <span style="font-size:.78rem;color:var(--muted);flex:1;text-align:right">${m.note}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render lista historial
+      const container = document.getElementById('history-container');
+      container.innerHTML = logs.map(l => `
+        <div class="history-card ${l.routineDone === 'NO' ? 'missed' : ''}">
+          <div class="history-header">
+            <span style="color:var(--accent);font-weight:700">📅 ${l.date} (${l.dayName}) — ${l.routinePlan || 'Rutina'}</span>
+            <span style="font-weight:700;color:${l.routineDone === 'SI' ? 'var(--accent)' : 'var(--red)'}">
+              ${l.routineDone === 'SI' ? '✅ Rutina Cumplida' : (l.routineDone === 'ADAPTADO' ? '⚠️ Adaptada' : '❌ No realizada')}
+            </span>
+          </div>
+          <div style="font-size:.85rem;color:var(--text);margin-bottom:6px">
+            ⚖️ <strong>Peso:</strong> <span style="color:var(--cyan);font-weight:700">${l.weight ? `${parseFloat(l.weight).toFixed(1)} kg` : '—'}</span> | 🥣 <strong>Desayuno:</strong> ${l.breakfast || '—'} | ☕ <strong>Cafés:</strong> ${l.coffee} | 🍵 <strong>Té:</strong> ${l.tea} | 🍷 <strong>Alcohol:</strong> ${l.alcohol}
+          </div>
+          ${(l.sleepHours || l.sleep || l.energy || l.water || (l.supplements && l.supplements.length > 0) || l.bodyNotes) ? `
+            <div style="font-size:.82rem;color:var(--cyan);margin-bottom:6px;background:rgba(0,240,255,0.04);padding:5px 8px;border-radius:4px;border-left:2px solid var(--cyan);font-family:var(--mono)">
+              🛌 <strong>Sueño:</strong> ${l.sleepHours || l.sleep || '—'}h ${l.sleepQuality ? `(${'⭐'.repeat(parseInt(l.sleepQuality))})` : ''} | 
+              ⚡ <strong>Energía:</strong> ${l.energy || 'Normal'} | 
+              💧 <strong>Agua:</strong> ${l.water || '2.0L'} 
+              ${l.supplements && l.supplements.length > 0 ? `| 💊 <strong>Suplementos:</strong> ${l.supplements.join(', ')}` : ''}
+              ${l.bodyNotes ? `<br><span style="color:var(--amber)">🩺 <strong>Estado físico:</strong> ${l.bodyNotes}</span>` : ''}
+            </div>
+          ` : ''}
+          <div style="font-size:.85rem;color:var(--text);margin-bottom:6px">
+            🍽️ <strong>Comida:</strong> ${l.lunch || '—'} <br>
+            🌙 <strong>Cena:</strong> ${l.dinner || '—'}
+          </div>
+          <div style="font-size:.85rem;color:var(--muted);margin-bottom:6px">
+            🚶 <strong>Paseo con Ana:</strong> ${l.walk === 'SI' ? 'Sí (~1h)' : (l.walk === 'OTRO' ? 'Sí (tiempo adaptado)' : 'No')} ${l.walkNotes ? `(${l.walkNotes})` : ''}
+          </div>
+          ${l.cardioDetails || l.cardioKcal ? `
+            <div style="font-size:.82rem;color:var(--amber);margin-bottom:6px;font-family:var(--mono)">
+              ⚡ <strong>Cardio Elíptica:</strong> ${l.cardioDetails || `${l.cardioMinutes} min, ${l.cardioKcal} kcal`}
+            </div>
+          ` : ''}
+          ${l.exercises && l.exercises.length > 0 ? `
+            <div style="font-size:.8rem;color:var(--cyan);margin-top:6px;font-family:var(--mono)">
+              🏋️ <strong>Fuerza:</strong> ${l.exercises.map(e => `${e.name} ${e.sets ? `[${e.sets}]` : ''} ${e.weight ? `@ ${e.weight}kg` : ''}`).join(' · ')}
+            </div>
+          ` : ''}
+          ${l.notes ? `
+            <div style="font-size:.78rem;color:var(--muted);margin-top:6px;font-style:italic">
+              📝 ${l.notes}
+            </div>
+          ` : ''}
+          ${l.cardioImage ? `
+            <div style="margin-top:8px">
+              <span style="font-size:.74rem;color:var(--cyan);font-family:var(--mono)">📸 Captura de Cardio:</span><br>
+              <img src="${l.cardioImage}" alt="Cardio" style="max-height:100px;border-radius:4px;border:1px solid var(--line);margin-top:4px">
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+
+      // Media de sueño y biometría
+      const logsWithSleep = logs.filter(l => (l.sleepHours || l.sleep) > 0);
+      const avgSleep = logsWithSleep.length > 0 ? (logsWithSleep.reduce((acc, l) => acc + (parseFloat(l.sleepHours || l.sleep)), 0) / logsWithSleep.length).toFixed(1) : '7.5';
+      const elSleepAvg = document.getElementById('stat-sleep-avg');
+      if (elSleepAvg) elSleepAvg.textContent = `${avgSleep} h`;
+      const elScouterSleep = document.getElementById('scouter-sleep-avg');
+      if (elScouterSleep) elScouterSleep.textContent = `${avgSleep} h / noche`;
+
+      // Actualizar Scanner Androide DBZ dinámicamente
+      const scouterBp = document.getElementById('scouter-bp');
+      if (scouterBp) {
+        const bpCalc = Math.round(9000 + (adherence * 8) + (streak * 40) + (walks * 30));
+        scouterBp.textContent = bpCalc.toLocaleString('es-ES');
+      }
+      const elScouterWeight = document.getElementById('scouter-current-weight');
+      if (elScouterWeight) elScouterWeight.textContent = `${latestWeight.toFixed(1)} kg`;
+      const elScouterLoss = document.getElementById('scouter-loss-stat');
+      if (elScouterLoss) elScouterLoss.textContent = `-${totalLoss} kg (-${((totalLoss / 108.0) * 100).toFixed(1)}%)`;
+      const elScouterDetox = document.getElementById('scouter-detox-days');
+      if (elScouterDetox) elScouterDetox.textContent = `${streak} días consecutivos`;
+      const elScouterCardio = document.getElementById('scouter-cardio-total');
+      if (elScouterCardio) elScouterCardio.textContent = `${Math.round(totalCardioKcal).toLocaleString('es-ES')} kcal`;
+      const elScouterBarAdh = document.getElementById('scouter-bar-adherence');
+      if (elScouterBarAdh) elScouterBarAdh.style.width = `${adherence}%`;
+      const elScouterBarAdhTxt = document.getElementById('scouter-bar-adherence-txt');
+      if (elScouterBarAdhTxt) elScouterBarAdhTxt.textContent = `${adherence}%`;
+      const elScouterBarAlc = document.getElementById('scouter-bar-alcohol');
+      if (elScouterBarAlc) elScouterBarAlc.style.width = `${Math.min(100, streak * 20)}%`;
+
+      // Scouter Esquema 03: Reactor & Core
+      const latestLog = logs[0] || {};
+      const elScouterEnergy = document.getElementById('scouter-energy-val');
+      if (elScouterEnergy) elScouterEnergy.textContent = latestLog.energy ? `⚡ ${latestLog.energy}` : '⚡ Modo Androide (Máxima)';
+      const elScouterWater = document.getElementById('scouter-water-val');
+      if (elScouterWater) elScouterWater.textContent = latestLog.water ? `💧 ${latestLog.water} / día` : '💧 2.5L / día (Ideal)';
+      const elScouterSupp = document.getElementById('scouter-supp-val');
+      if (elScouterSupp) {
+        const suppList = latestLog.supplements && latestLog.supplements.length > 0 ? latestLog.supplements.join(' + ') : '🥤 Proteína Whey + ⚡ Creatina';
+        elScouterSupp.textContent = suppList;
+      }
+      const elScouterBarEnergy = document.getElementById('scouter-bar-energy');
+      const elScouterBarEnergyClass = document.getElementById('scouter-bar-energy-class');
+      if (elScouterBarEnergy) {
+        const isHigh = !latestLog.energy || latestLog.energy.toLowerCase().includes('androide') || latestLog.energy.toLowerCase().includes('alta') || latestLog.energy.toLowerCase().includes('much');
+        elScouterBarEnergy.style.width = isHigh ? '96%' : (latestLog.energy === 'Normal' ? '75%' : '50%');
+        if (elScouterBarEnergyClass) elScouterBarEnergyClass.textContent = isHigh ? 'CLASE S+' : 'CLASE B';
+      }
+    }
+
+    // Exportar JSON
+    document.getElementById('btn-export-json').addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(loadLogs(), null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `seguimiento_deportivo_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    });
+
+    // Render inicial
+    renderStats();
+
+    // --- PWA SERVICE WORKER & INSTALADOR MÓVIL ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    let deferredPrompt = null;
+    const btnPwaInstall = document.getElementById('btn-pwa-install');
+    const pwaBanner = document.getElementById('pwa-install-banner');
+    const btnClosePwa = document.getElementById('btn-close-pwa');
+    const btnTriggerNative = document.getElementById('btn-trigger-native-install');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (btnTriggerNative) btnTriggerNative.hidden = false;
+    });
+
+    btnPwaInstall?.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          showToast('📲 INSTALANDO SCOUTER DBZ EN TU MÓVIL...');
+        }
+        deferredPrompt = null;
+      } else if (pwaBanner) {
+        pwaBanner.hidden = !pwaBanner.hidden;
+      }
+    });
+
+    btnTriggerNative?.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        btnTriggerNative.hidden = true;
+      }
+    });
+
+    btnClosePwa?.addEventListener('click', () => {
+      if (pwaBanner) pwaBanner.hidden = true;
+    });
+  </script>
+</body>
+</html>

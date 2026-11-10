@@ -1,0 +1,25 @@
+{
+  "name": "Scouter DBZ — Seguimiento Deportivo y Nutricional",
+  "short_name": "Scouter DBZ",
+  "description": "Telemetría deportiva, nutricional y biométrica con Scanner Androide Dr. Gero / Red Ribbon.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#02070d",
+  "theme_color": "#00ff66",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
