@@ -2064,20 +2064,20 @@
       }
     }
 
-    // --- DBZ SOUND FX ENGINE (WEB AUDIO API NATIVA) ---
+    // --- DBZ SOUND FX ENGINE (CLIPS DE AUDIO AUTÉNTICOS DE LA SERIE) ---
     let soundEnabled = localStorage.getItem('scouter_sound_enabled') !== 'false';
-    let audioCtx = null;
 
-    function getAudioContext() {
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) audioCtx = new AudioContextClass();
-      }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
-    }
+    const SFX = {
+      scouter: new Audio('assets/audio/scouter.mp3'),
+      teleport: new Audio('assets/audio/teleport.mp3'),
+      powerup: new Audio('assets/audio/powerup.mp3'),
+      punch: new Audio('assets/audio/punch.mp3')
+    };
+
+    Object.values(SFX).forEach(aud => {
+      aud.preload = 'auto';
+      aud.volume = 0.7;
+    });
 
     const btnSoundToggle = document.getElementById('btn-sound-toggle');
     function updateSoundToggleBtn() {
@@ -2095,105 +2095,20 @@
       if (soundEnabled) playScouterBeep();
     });
 
-    function playScouterBeep() {
-      if (!soundEnabled) return;
+    function playAudioSafe(aud) {
+      if (!soundEnabled || !aud) return;
       try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const now = ctx.currentTime;
-        [1200, 1600, 2100].forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(freq, now + idx * 0.04);
-          gain.gain.setValueAtTime(0.04, now + idx * 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.035);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now + idx * 0.04);
-          osc.stop(now + idx * 0.04 + 0.035);
-        });
+        aud.currentTime = 0;
+        const p = aud.play();
+        if (p !== undefined) p.catch(() => {});
       } catch (e) {}
     }
 
-    function playKiPowerUp() {
-      if (!soundEnabled) return;
-      try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(80, now);
-        osc.frequency.exponentialRampToValueAtTime(320, now + 0.4);
-
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(220, now);
-        filter.frequency.exponentialRampToValueAtTime(1600, now + 0.4);
-
-        gain.gain.setValueAtTime(0.01, now);
-        gain.gain.linearRampToValueAtTime(0.12, now + 0.2);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.5);
-      } catch (e) {}
-    }
-
-    function playInstantTransmission() {
-      if (!soundEnabled) return;
-      try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1900, now);
-        osc.frequency.exponentialRampToValueAtTime(260, now + 0.1);
-
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.12);
-      } catch (e) {}
-    }
-
-    function playShenronRoar() {
-      if (!soundEnabled) return;
-      try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const now = ctx.currentTime;
-        [261.63, 329.63, 392.00, 523.25].forEach(f => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(f, now);
-          osc.frequency.exponentialRampToValueAtTime(f * 1.5, now + 0.6);
-
-          gain.gain.setValueAtTime(0.06, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.8);
-        });
-      } catch (e) {}
-    }
+    function playScouterBeep() { playAudioSafe(SFX.scouter); }
+    function playInstantTransmission() { playAudioSafe(SFX.teleport); }
+    function playKiPowerUp() { playAudioSafe(SFX.powerup); }
+    function playShenronRoar() { playAudioSafe(SFX.powerup); }
+    function playPunchSound() { playAudioSafe(SFX.punch); }
 
     // --- TOAST NOTIFICATION ---
     function showToast(msg) {
