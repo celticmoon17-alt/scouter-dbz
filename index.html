@@ -816,6 +816,19 @@
               <input type="hidden" id="f-alcohol" value="NO">
             </div>
           </div>
+
+          <!-- ESTIMADOR DE CALORÍAS EN VIVO -->
+          <div style="margin-top:14px;background:#050d15;border:1px solid #ffb70366;border-left:3px solid var(--amber);border-radius:6px;padding:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+            <div>
+              <div style="font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:1px">🔥 ESTIMACIÓN CALÓRICA INGERIDA (CÁLCULO AUTOMÁTICO)</div>
+              <div style="font-family:var(--mono);font-size:1.45rem;font-weight:900;color:var(--amber)" id="display-calories-est">~0 kcal</div>
+              <div style="font-size:.74rem;color:var(--cyan);margin-top:2px;font-family:var(--mono)" id="display-calories-breakdown">Desayuno: — | Comida: — | Cena: —</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <label for="f-calories-override" style="font-family:var(--mono);font-size:.74rem;color:var(--muted)">Ajuste manual (kcal):</label>
+              <input type="number" id="f-calories-override" placeholder="Auto" style="width:90px;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--amber);font-family:var(--mono);font-weight:700;border-radius:4px">
+            </div>
+          </div>
         </div>
 
         <!-- BIOMETRÍA & RECUPERACIÓN (SUEÑO, ENERGÍA, HIDRATACIÓN, SUPLEMENTOS, ESTADO) -->
@@ -1011,6 +1024,11 @@
             <div class="stat-val" id="stat-sleep-avg" style="color:#00f0ff">7.5 h</div>
             <div style="font-size:.72rem;color:var(--muted)">Media horas / noche</div>
           </div>
+          <div class="stat-box">
+            <div class="stat-label">Ingesta Media Diaria</div>
+            <div class="stat-val" id="stat-calories-avg" style="color:var(--amber)">~1.850 kcal</div>
+            <div style="font-size:.72rem;color:var(--muted)">Media nutrición estimada</div>
+          </div>
         </div>
       </div>
 
@@ -1113,7 +1131,7 @@
 
             <div class="scouter-callout">
               <strong>NUTRICIÓN &amp; COMBUSTIBLE BIOMECÁNICO</strong>
-              Base habitual: Porridge (avena + proteína + fruta) y Tostadas Proteína con Cottage.
+              Ingesta media: <span style="color:#ffb703;font-weight:700" id="scouter-nutrition-kcal">~1.850 kcal / día</span>. Base: Porridge y Tostadas Proteína con Cottage. Déficit óptimo frente a gasto basal (~1.950 kcal) + cardio.
             </div>
           </div>
 
@@ -1540,6 +1558,9 @@
     const fBodyNotes = document.getElementById('f-body-notes');
 
     const fRoutineDone = document.getElementById('f-routine-done');
+    const fCaloriesOverride = document.getElementById('f-calories-override');
+    const displayCaloriesEst = document.getElementById('display-calories-est');
+    const displayCaloriesBreakdown = document.getElementById('display-calories-breakdown');
     const btnToggleExercises = document.getElementById('btn-toggle-exercises');
     const exercisesPanel = document.getElementById('exercises-panel');
     const toggleIndicator = document.getElementById('toggle-indicator');
@@ -1556,6 +1577,103 @@
     const btnReloadExcel = document.getElementById('btn-reload-excel');
 
     let currentCardioBase64 = '';
+
+    // --- ESTIMACIÓN INTELIGENTE DE CALORÍAS INGERIDAS ---
+    function estimateMealCalories(text) {
+      if (!text || !text.trim()) return 0;
+      const lower = text.toLowerCase();
+      let kcal = 0;
+      let matched = false;
+
+      // Detección de gramajes explícitos (ej.: "300g pollo", "350g ternera", "100g maíz")
+      const gramMatches = [...lower.matchAll(/(\d+)\s*g(?:r|ramos)?\s*([a-záéíóúñ]+)/g)];
+      gramMatches.forEach(m => {
+        const g = parseFloat(m[1]);
+        const f = m[2];
+        if (f.includes('pollo') || f.includes('pavo') || f.includes('pechuga')) { kcal += (g * 1.2); matched = true; }
+        else if (f.includes('ternera') || f.includes('carne') || f.includes('buey')) { kcal += (g * 1.8); matched = true; }
+        else if (f.includes('salmon') || f.includes('salmón')) { kcal += (g * 2.0); matched = true; }
+        else if (f.includes('arroz') || f.includes('pasta')) { kcal += (g * 1.3); matched = true; }
+        else if (f.includes('maiz') || f.includes('maíz') || f.includes('palomita')) { kcal += (g * 3.5); matched = true; }
+        else if (f.includes('patata')) { kcal += (g * 0.9); matched = true; }
+      });
+
+      // Palabras clave de alimentos habituales
+      if ((lower.includes('pollo') || lower.includes('pavo') || lower.includes('pechuga')) && !matched) kcal += 320;
+      if ((lower.includes('ternera') || lower.includes('entrecot') || lower.includes('filete')) && !matched) kcal += 380;
+      if ((lower.includes('salmon') || lower.includes('salmón')) && !matched) kcal += 350;
+      if (lower.includes('merluza') || lower.includes('pescado') || lower.includes('bacalao') || lower.includes('atun') || lower.includes('atún')) kcal += 220;
+      if (lower.includes('lenteja') || lower.includes('garbanzo') || lower.includes('alubia') || lower.includes('potaje')) kcal += 420;
+      if (lower.includes('quesadilla') || lower.includes('quiche') || lower.includes('quiché') || lower.includes('pizza') || lower.includes('empanada')) kcal += 480;
+      if ((lower.includes('arroz') || lower.includes('pasta') || lower.includes('macarron') || lower.includes('espagueti')) && !matched) kcal += 220;
+      if ((lower.includes('patata') || lower.includes('pure') || lower.includes('puré')) && !matched) kcal += 160;
+      if (lower.includes('verdura') || lower.includes('brocoli') || lower.includes('brócoli') || lower.includes('ensalada') || lower.includes('judia') || lower.includes('judía')) kcal += 80;
+      if (lower.includes('huevo') || lower.includes('tortilla')) kcal += 180;
+      if (lower.includes('pan') || lower.includes('tostada')) kcal += 140;
+      if (lower.includes('proteina') || lower.includes('proteína') || lower.includes('scoop') || lower.includes('whey') || lower.includes('batido')) kcal += 130;
+      if (lower.includes('yogur') || lower.includes('cottage') || lower.includes('queso')) kcal += 120;
+      if (lower.includes('fruta') || lower.includes('platano') || lower.includes('plátano') || lower.includes('manzana')) kcal += 90;
+      if (lower.includes('aceite') || lower.includes('oliva')) kcal += 90;
+      if (lower.includes('libre') || lower.includes('no saludable') || lower.includes('cheat') || lower.includes('hamburguesa')) kcal += 750;
+
+      if (kcal === 0 && text.trim().length > 3) kcal = 450;
+      return Math.round(kcal);
+    }
+
+    function calculateDayCalories(item) {
+      let bKcal = 0;
+      const bText = item.breakfast || item.breakfastType || '';
+      if (bText.includes('Porridge')) {
+        bKcal = 480;
+      } else if (bText.includes('Tostada')) {
+        bKcal = 420;
+      } else if (bText.toLowerCase().includes('cafe') || bText.toLowerCase().includes('café') || bText.toLowerCase().includes('ayuno')) {
+        bKcal = 20;
+      } else if (bText.toLowerCase().includes('libre')) {
+        bKcal = 650;
+      } else {
+        bKcal = estimateMealCalories(bText);
+        if (bKcal === 0 && bText.length > 2) bKcal = 380;
+      }
+
+      const lKcal = estimateMealCalories(item.lunch || '');
+      const dKcal = estimateMealCalories(item.dinner || '');
+
+      let extraKcal = 0;
+      const coffee = parseInt(item.coffee) || 0;
+      extraKcal += (coffee * 25);
+      const tea = parseInt(item.tea) || 0;
+      extraKcal += (tea * 5);
+      if (item.alcohol === 'SI') extraKcal += 250;
+      if (item.supplements && item.supplements.some(s => s.toLowerCase().includes('prote'))) extraKcal += 120;
+
+      const total = item.caloriesOverride ? parseInt(item.caloriesOverride) : (bKcal + lKcal + dKcal + extraKcal);
+      return { total, bKcal, lKcal, dKcal, extraKcal };
+    }
+
+    function updateLiveCalories() {
+      if (!displayCaloriesEst) return;
+      const bVal = fBreakfastType.value === 'Otros' ? fBreakfastOther.value : fBreakfastType.value;
+      const calcs = calculateDayCalories({
+        breakfast: bVal,
+        lunch: fLunch.value,
+        dinner: fDinner.value,
+        coffee: fCoffee.value,
+        tea: fTea.value,
+        alcohol: fAlcohol.value,
+        supplements: [fSuppProtein.checked ? 'Proteína Whey' : null].filter(Boolean),
+        caloriesOverride: fCaloriesOverride.value
+      });
+
+      if (fCaloriesOverride.value) {
+        displayCaloriesEst.textContent = `~${parseInt(fCaloriesOverride.value).toLocaleString('es-ES')} kcal (Manual)`;
+      } else {
+        displayCaloriesEst.textContent = `~${calcs.total.toLocaleString('es-ES')} kcal`;
+      }
+      if (displayCaloriesBreakdown) {
+        displayCaloriesBreakdown.textContent = `Desayuno: ~${calcs.bKcal} | Comida: ~${calcs.lKcal} | Cena: ~${calcs.dKcal} | Extras: ~${calcs.extraKcal} kcal`;
+      }
+    }
 
     // --- TOAST NOTIFICATION ---
     function showToast(msg) {
@@ -1586,6 +1704,12 @@
           if (existing.water) fWater.value = existing.water;
           if (existing.bodyStatus) fBodyStatus.value = existing.bodyStatus;
           if (existing.bodyNotes) fBodyNotes.value = existing.bodyNotes;
+          if (existing.caloriesOverride) fCaloriesOverride.value = existing.caloriesOverride;
+          else fCaloriesOverride.value = '';
+          if (existing.lunch) fLunch.value = existing.lunch;
+          else fLunch.value = '';
+          if (existing.dinner) fDinner.value = existing.dinner;
+          else fDinner.value = '';
           if (existing.supplements) {
             fSuppProtein.checked = existing.supplements.some(s => s.toLowerCase().includes('prote'));
             fSuppCreatine.checked = existing.supplements.some(s => s.toLowerCase().includes('creatin'));
@@ -1595,7 +1719,11 @@
           fWeight.value = '';
           fSleepHours.value = '';
           fBodyNotes.value = '';
+          fCaloriesOverride.value = '';
+          fLunch.value = '';
+          fDinner.value = '';
         }
+        updateLiveCalories();
       }
     }
 
@@ -1625,7 +1753,18 @@
       fAlcohol.value = 'SI';
       btnAlcoholYes.className = 'seg-btn active-yes';
       btnAlcoholNo.className = 'seg-btn';
+      updateLiveCalories();
     });
+
+    btnAlcoholNo.addEventListener('click', () => {
+      updateLiveCalories();
+    });
+
+    [fBreakfastType, fBreakfastOther, fLunch, fDinner, fCoffee, fTea, fCaloriesOverride].forEach(el => {
+      el?.addEventListener('input', updateLiveCalories);
+      el?.addEventListener('change', updateLiveCalories);
+    });
+    fSuppProtein?.addEventListener('change', updateLiveCalories);
 
     // --- TOGGLE EJERCICIOS DETALLADOS ---
     btnToggleExercises.addEventListener('click', () => {
@@ -1716,11 +1855,26 @@
       if (fSuppCreatine.checked) supplements.push('Creatina');
       if (fSuppVitamins.checked) supplements.push('Multivitamínico / Magnesio');
 
+      const bVal = fBreakfastType.value === 'Otros' ? `Otros: ${fBreakfastOther.value.trim()}` : fBreakfastType.value;
+      const calcs = calculateDayCalories({
+        breakfast: bVal,
+        lunch: fLunch.value.trim(),
+        dinner: fDinner.value.trim(),
+        coffee: fCoffee.value,
+        tea: fTea.value,
+        alcohol: fAlcohol.value,
+        supplements: supplements,
+        caloriesOverride: fCaloriesOverride.value
+      });
+
       const entry = {
         id: crypto.randomUUID(),
         date: fDate.value,
         dayName: fDayname.value,
         weight: fWeight.value ? parseFloat(fWeight.value) : null,
+        estimatedCalories: calcs.total,
+        caloriesOverride: fCaloriesOverride.value ? parseInt(fCaloriesOverride.value) : null,
+        caloriesBreakdown: calcs,
         sleepHours: fSleepHours.value ? parseFloat(fSleepHours.value) : 7.5,
         sleepQuality: fSleepQuality.value,
         energy: fEnergy.value,
@@ -1728,7 +1882,7 @@
         supplements: supplements,
         bodyStatus: fBodyStatus.value,
         bodyNotes: fBodyNotes.value.trim(),
-        breakfast: fBreakfastType.value === 'Otros' ? `Otros: ${fBreakfastOther.value.trim()}` : fBreakfastType.value,
+        breakfast: bVal,
         lunch: fLunch.value.trim(),
         dinner: fDinner.value.trim(),
         coffee: fCoffee.value,
@@ -1878,6 +2032,9 @@
           <div style="font-size:.85rem;color:var(--text);margin-bottom:6px">
             🍽️ <strong>Comida:</strong> ${l.lunch || '—'} <br>
             🌙 <strong>Cena:</strong> ${l.dinner || '—'}
+            <div style="margin-top:3px;font-family:var(--mono);font-size:.76rem;color:var(--amber)">
+              🔥 <strong>Ingesta Calórica:</strong> ~${(l.estimatedCalories || calculateDayCalories(l).total).toLocaleString('es-ES')} kcal ${l.caloriesOverride ? '(manual)' : '(estimada)'}
+            </div>
           </div>
           <div style="font-size:.85rem;color:var(--muted);margin-bottom:6px">
             🚶 <strong>Paseo con Ana:</strong> ${l.walk === 'SI' ? 'Sí (~1h)' : (l.walk === 'OTRO' ? 'Sí (tiempo adaptado)' : 'No')} ${l.walkNotes ? `(${l.walkNotes})` : ''}
@@ -1913,6 +2070,22 @@
       if (elSleepAvg) elSleepAvg.textContent = `${avgSleep} h`;
       const elScouterSleep = document.getElementById('scouter-sleep-avg');
       if (elScouterSleep) elScouterSleep.textContent = `${avgSleep} h / noche`;
+
+      // Media de calorías estimadas
+      let sumCalories = 0;
+      let countCalories = 0;
+      logs.forEach(l => {
+        const cal = l.estimatedCalories || calculateDayCalories(l).total;
+        if (cal > 0) {
+          sumCalories += cal;
+          countCalories++;
+        }
+      });
+      const avgCalories = countCalories > 0 ? Math.round(sumCalories / countCalories) : 1850;
+      const elCalAvg = document.getElementById('stat-calories-avg');
+      if (elCalAvg) elCalAvg.textContent = `~${avgCalories.toLocaleString('es-ES')} kcal`;
+      const elScouterNutrition = document.getElementById('scouter-nutrition-kcal');
+      if (elScouterNutrition) elScouterNutrition.textContent = `~${avgCalories.toLocaleString('es-ES')} kcal / día`;
 
       // Actualizar Scanner Androide DBZ dinámicamente
       const scouterBp = document.getElementById('scouter-bp');
