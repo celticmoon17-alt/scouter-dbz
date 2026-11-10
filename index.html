@@ -680,6 +680,7 @@
         </div>
         <div class="header-meta" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <span>SYS: TELEMETRÍA ANDROIDE DBZ V2.0</span>
+          <button type="button" id="btn-cloud-sync" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#05131a;border:1px solid #00f0ff;color:#00f0ff;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,240,255,0.2)">☁️ Sincronizar Nube</button>
           <button type="button" id="btn-pwa-install" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,255,102,0.25)">📲 INSTALAR EN MÓVIL</button>
         </div>
       </div>
@@ -1007,9 +1008,13 @@
 
       <!-- HISTORIAL DETALLADO DÍA A DÍA -->
       <div class="card card-hud">
-        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <span>HISTORIAL DETALLADO DÍA A DÍA (<span id="history-count">0</span> REGISTROS)</span>
-          <button type="button" id="btn-export-json" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#090e13;border:1px solid var(--cyan);color:var(--cyan);border-radius:4px;cursor:pointer">Exportar JSON</button>
+          <div style="display:flex;gap:6px">
+            <button type="button" id="btn-import-json" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#090e13;border:1px solid var(--accent);color:var(--accent);border-radius:4px;cursor:pointer">📥 Importar JSON</button>
+            <input type="file" id="file-import-json" accept=".json" style="display:none">
+            <button type="button" id="btn-export-json" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#090e13;border:1px solid var(--cyan);color:var(--cyan);border-radius:4px;cursor:pointer">📤 Exportar JSON</button>
+          </div>
         </div>
         <div id="history-container">
           <!-- Historial de días -->
@@ -1730,6 +1735,7 @@
 
       showToast(`✅ TELEMETRÍA DEL ${entry.date} GRABADA CON ÉXITO`);
       renderStats();
+      syncWithCloud(true);
     });
 
     // --- RECARGAR DATOS DEL EXCEL ---
@@ -1972,7 +1978,38 @@
       }
     }
 
-    // Exportar JSON
+    // --- IMPORTAR & EXPORTAR JSON ---
+    const btnImportJson = document.getElementById('btn-import-json');
+    const fileImportJson = document.getElementById('file-import-json');
+    btnImportJson?.addEventListener('click', () => fileImportJson.click());
+    fileImportJson?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const imported = JSON.parse(evt.target.result);
+          if (Array.isArray(imported)) {
+            const current = loadLogs();
+            const map = new Map();
+            EXCEL_SEED_LOGS.forEach(l => map.set(l.date, l));
+            current.forEach(l => map.set(l.date, l));
+            imported.forEach(l => map.set(l.date, { ...(map.get(l.date) || {}), ...l }));
+            const merged = Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
+            saveLogs(merged);
+            renderStats();
+            syncWithCloud(true);
+            showToast(`📥 ${imported.length} REGISTROS IMPORTADOS CON ÉXITO`);
+          } else {
+            showToast('⚠️ Archivo JSON no válido');
+          }
+        } catch (err) {
+          showToast('⚠️ Error al leer el archivo JSON');
+        }
+      };
+      reader.readAsText(file);
+    });
+
     document.getElementById('btn-export-json').addEventListener('click', () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(loadLogs(), null, 2));
       const downloadAnchor = document.createElement('a');
@@ -1983,8 +2020,67 @@
       downloadAnchor.remove();
     });
 
-    // Render inicial
+    // --- SINCRONIZACIÓN EN LA NUBE (PC <-> MÓVIL) ---
+    const CLOUD_SYNC_ID = 'ff808181a09d98f701a1c5fc1a927f45';
+    const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_SYNC_ID}`;
+    const btnCloudSync = document.getElementById('btn-cloud-sync');
+
+    async function syncWithCloud(silent = false) {
+      if (!navigator.onLine) {
+        if (!silent) showToast('⚠️ Sin conexión para sincronizar');
+        return;
+      }
+      if (btnCloudSync) btnCloudSync.textContent = '⏳ Conectando...';
+      try {
+        const res = await fetch(CLOUD_API_URL);
+        let cloudLogs = [];
+        if (res.ok) {
+          const json = await res.json();
+          cloudLogs = json.data?.logs || [];
+        }
+
+        const localLogs = loadLogs();
+        const map = new Map();
+        EXCEL_SEED_LOGS.forEach(l => map.set(l.date, l));
+        cloudLogs.forEach(l => map.set(l.date, { ...(map.get(l.date) || {}), ...l }));
+        localLogs.forEach(l => map.set(l.date, { ...(map.get(l.date) || {}), ...l }));
+
+        const merged = Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
+        saveLogs(merged);
+
+        const payload = {
+          name: 'scouter_dbz_cloud_sync_dani',
+          data: {
+            version: 2,
+            updatedAt: new Date().toISOString(),
+            syncChannel: 'dani-red-ribbon',
+            logs: merged
+          }
+        };
+        await fetch(CLOUD_API_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        renderStats();
+        if (btnCloudSync) btnCloudSync.textContent = '☁️ Nube Sincronizada';
+        setTimeout(() => { if (btnCloudSync) btnCloudSync.textContent = '☁️ Sincronizar Nube'; }, 2500);
+        if (!silent) showToast('☁️ DATOS SINCRONIZADOS ENTRE PC Y MÓVIL');
+      } catch (err) {
+        if (btnCloudSync) btnCloudSync.textContent = '⚠️ Error Nube';
+        setTimeout(() => { if (btnCloudSync) btnCloudSync.textContent = '☁️ Sincronizar Nube'; }, 2500);
+        if (!silent) showToast('⚠️ No se pudo sincronizar con la nube');
+      }
+    }
+
+    btnCloudSync?.addEventListener('click', () => syncWithCloud(false));
+
+    // Render inicial y sincronización automática
     renderStats();
+    window.addEventListener('load', () => {
+      setTimeout(() => syncWithCloud(true), 1000);
+    });
 
     // --- PWA SERVICE WORKER & INSTALADOR MÓVIL ---
     if ('serviceWorker' in navigator) {
