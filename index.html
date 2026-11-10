@@ -7,11 +7,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Scouter DBZ">
+  <meta name="apple-mobile-web-app-title" content="Seguimiento Saiyajin">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
-  <title>Scouter DBZ — Seguimiento Deportivo y Nutricional</title>
+  <title>Seguimiento Saiyajin — Telemetría Deportiva DBZ</title>
   <style>
     :root {
       --bg: #070a0e;
@@ -711,17 +711,17 @@
       <div class="header-top">
         <div class="brand">
           <div class="brand-dot"></div>
-          <span>SEGUIMIENTO DEPORTIVO &amp; NUTRICIONAL</span>
+          <span>SEGUIMIENTO SAIYAJIN</span>
         </div>
         <div class="header-meta" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span>SYS: TELEMETRÍA ANDROIDE DBZ V2.0</span>
+          <span>SYS: TELEMETRÍA SAIYAJIN V2.0</span>
           <button type="button" id="btn-cloud-sync" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#05131a;border:1px solid #00f0ff;color:#00f0ff;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,240,255,0.2)">☁️ Sincronizar Nube</button>
           <button type="button" id="btn-pwa-install" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,255,102,0.25)">📲 INSTALAR EN MÓVIL</button>
         </div>
       </div>
       <div id="pwa-install-banner" hidden style="margin-top:12px;background:#050c14;border:1px solid #00ff66;border-radius:8px;padding:14px;font-family:var(--mono);font-size:.82rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <strong style="color:#00ff66;font-size:.9rem">📲 INSTALACIÓN COMO APP EN ANDROID / iOS (PWA RED RIBBON)</strong>
+          <strong style="color:#00ff66;font-size:.9rem">📲 INSTALACIÓN COMO APP EN TU MÓVIL (SEGUIMIENTO SAIYAJIN)</strong>
           <button type="button" id="btn-close-pwa" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem">✕</button>
         </div>
         <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
@@ -2779,7 +2779,7 @@
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
-          showToast('📲 INSTALANDO SCOUTER DBZ EN TU MÓVIL...');
+          showToast('📲 INSTALANDO SEGUIMIENTO SAIYAJIN EN TU MÓVIL...');
         }
         deferredPrompt = null;
       } else if (pwaBanner) {

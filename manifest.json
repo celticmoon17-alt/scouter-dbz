@@ -1,7 +1,7 @@
 {
-  "name": "Scouter DBZ — Seguimiento Deportivo y Nutricional",
-  "short_name": "Scouter DBZ",
-  "description": "Telemetría deportiva, nutricional y biométrica con Scanner Androide Dr. Gero / Red Ribbon.",
+  "name": "Seguimiento Saiyajin — Telemetría Deportiva DBZ",
+  "short_name": "Seguimiento Saiyajin",
+  "description": "Telemetría deportiva, nutricional y biométrica Saiyajin.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
