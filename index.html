@@ -94,15 +94,29 @@
       align-items: center;
       gap: 10px;
     }
-    .brand-dot {
-      width: 10px;
-      height: 10px;
-      background: var(--accent);
+    .kame-emblem {
+      width: 34px;
+      height: 34px;
+      background: #ff6600;
+      border: 2px solid #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent);
-      animation: pulse 1.5s infinite alternate;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #000000;
+      font-weight: 900;
+      font-size: 1.25rem;
+      font-family: "Segoe UI", sans-serif;
+      box-shadow: 0 0 14px rgba(255, 102, 0, 0.75);
+      flex-shrink: 0;
+      line-height: 1;
+      text-shadow: none;
+      cursor: default;
+      transition: transform 0.2s ease;
     }
-    @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+    .kame-emblem:hover {
+      transform: scale(1.15) rotate(5deg);
+    }
 
     .header-meta {
       font-family: var(--mono);
@@ -710,7 +724,7 @@
     <header>
       <div class="header-top">
         <div class="brand">
-          <div class="brand-dot"></div>
+          <div class="kame-emblem" title="Escuela Tortuga — Mutenroshi (亀)">亀</div>
           <span>SEGUIMIENTO SAIYAJIN</span>
         </div>
         <div class="header-meta" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -2750,6 +2764,15 @@
     });
 
     // Render inicial y sincronización automática
+    console.log(`%c
+   ████████████████████████████████
+   █     🐢 ESCUELA TORTUGA 🐢    █
+   █           【 亀 】           █
+   █   «Hay que trabajar, hay que █
+   █   aprender, comer, descansar █
+   █   y también hay que jugar»   █
+   ████████████████████████████████
+    `, 'color:#ff6600;font-weight:bold;font-family:monospace;font-size:12px;');
     renderStats();
     window.addEventListener('load', () => {
       setTimeout(() => syncWithGitHub(true), 1000);
