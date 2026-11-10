@@ -730,6 +730,7 @@
         <div class="header-meta" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <span>SYS: TELEMETRÍA SAIYAJIN V2.0</span>
           <button type="button" id="btn-cloud-sync" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#05131a;border:1px solid #00f0ff;color:#00f0ff;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,240,255,0.2)">☁️ Sincronizar Nube</button>
+          <button type="button" id="btn-sound-toggle" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 8px;background:#151205;border:1px solid #ffb703;color:#ffb703;border-radius:4px;cursor:pointer" title="Activar/Silenciar efectos de sonido DBZ">🔊 FX</button>
           <button type="button" id="btn-pwa-install" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,255,102,0.25)">📲 INSTALAR EN MÓVIL</button>
         </div>
       </div>
@@ -1084,9 +1085,12 @@
       
       <!-- INDICADORES CLAVE -->
       <div class="card card-hud">
-        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <span>TELEMETRÍA &amp; RENDIMIENTO ANDROIDE</span>
-          <button type="button" id="btn-reload-excel" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#0d2218;border:1px solid var(--accent);color:var(--accent);border-radius:4px;cursor:pointer" title="Cargar los datos históricos del Excel">📥 Sincronizar Excel</button>
+          <div style="display:flex;gap:6px">
+            <button type="button" id="btn-export-whatsapp" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:4px 8px;background:#0d2218;border:1px solid #25D366;color:#25D366;border-radius:4px;cursor:pointer">📱 Resumen WhatsApp</button>
+            <button type="button" id="btn-reload-excel" style="font-family:var(--mono);font-size:.76rem;padding:4px 8px;background:#0d2218;border:1px solid var(--accent);color:var(--accent);border-radius:4px;cursor:pointer" title="Cargar los datos históricos del Excel">📥 Sincronizar Excel</button>
+          </div>
         </div>
         
         <div class="stat-boxes">
@@ -1124,6 +1128,32 @@
             <div class="stat-label">Ingesta Media Diaria</div>
             <div class="stat-val" id="stat-calories-avg" style="color:var(--amber)">~1.850 kcal</div>
             <div style="font-size:.72rem;color:var(--muted)">Media nutrición estimada</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAS 7 BOLAS DE DRAGÓN // RACHA SEMANAL & INVOCACIÓN DE SHENRON -->
+      <div class="card card-hud" style="border-color:#ffb70366;background:#050d15">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="color:#ffb703">🐉</span>
+            <span>LAS 7 BOLAS DE DRAGÓN // RACHA SEMANAL &amp; SHENRON</span>
+          </div>
+          <span id="dragon-streak-count" style="font-family:var(--mono);font-size:.8rem;color:#ffb703;font-weight:700">5 / 7 Esferas reunidas</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">
+          Cada día consecutivo de rutina cumplida y 0% alcohol desbloquea 1 Esfera del Dragón. Reúne las 7 para invocar a Shenron y desbloquear oficialmente tu <strong>Cheat Meal</strong> semanal.
+        </div>
+        
+        <div id="dragon-balls-container" style="display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:8px;padding:12px;background:#03080e;border:1px solid #ffb70344;border-radius:8px">
+          <!-- 7 Bolas dinámicas generadas en renderStats -->
+        </div>
+
+        <div id="shenron-summon-banner" hidden style="margin-top:12px;background:linear-gradient(90deg, #102812 0%, #05140a 100%);border:2px solid #00ff66;border-radius:6px;padding:12px;display:flex;align-items:center;gap:12px;box-shadow:0 0 20px rgba(0,255,102,0.3)">
+          <span style="font-size:2.2rem">🐉</span>
+          <div>
+            <strong style="color:#00ff66;font-family:var(--mono);font-size:.9rem">¡HAS REUNIDO LAS 7 ESFERAS DEL DRAGÓN!</strong>
+            <div style="font-size:.78rem;color:var(--text);margin-top:2px">¡Shenron ha sido invocado! Tu deseo de <em>Comida Libre / Cheat Meal</em> semanal ha sido concedido sin culpa. ¡Disfrútala al máximo!</div>
           </div>
         </div>
       </div>
@@ -1226,6 +1256,57 @@
           </div>
           <div id="balance-day-list" style="display:flex;flex-direction:column;gap:8px">
             <!-- Filas dinámicas generadas en renderStats -->
+          </div>
+        </div>
+
+        <!-- COMPENSADOR DE CHEAT MEAL // NEUTRALIZADOR DE SUPERÁVIT -->
+        <div style="margin-top:20px;background:#050c14;border:1px solid #ff770066;border-radius:8px;padding:16px;border-left:4px solid #ff7700">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:1.15rem">🍕</span>
+              <strong style="font-family:var(--mono);color:#ff7700;font-size:.9rem">COMPENSADOR DE CHEAT MEAL // NEUTRALIZADOR DE SUPERÁVIT</strong>
+            </div>
+            <span style="font-family:var(--mono);font-size:.74rem;color:var(--muted)">Calcula cómo compensar una cena social</span>
+          </div>
+
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">
+            Elige un exceso estimado o introduce las kcal para calcular el tiempo exacto de elíptica y paseos para que tu déficit semanal no sufra:
+          </div>
+
+          <!-- BOTONES RÁPIDOS DE COMIDA LIBRE -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+            <button type="button" class="btn-cheat-preset" data-kcal="1200" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍕 Pizza + Bebidas (~1.200 kcal)</button>
+            <button type="button" class="btn-cheat-preset" data-kcal="900" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍔 Burger con Patatas (~900 kcal)</button>
+            <button type="button" class="btn-cheat-preset" data-kcal="600" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍣 Sushi Variado (~600 kcal)</button>
+            <button type="button" class="btn-cheat-preset" data-kcal="450" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍰 Postre / Helado (~450 kcal)</button>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+            <label style="font-family:var(--mono);font-size:.8rem;color:var(--text)">Kcal de superávit:</label>
+            <input type="number" id="f-cheat-kcal" value="900" step="50" style="width:120px;padding:6px 10px;background:#090e13;border:1px solid #ff7700;color:#ff7700;font-weight:700;font-family:var(--mono);border-radius:4px">
+            <button type="button" id="btn-calc-cheat" style="padding:6px 14px;background:#1a0f05;border:1px solid #ff7700;color:#ff7700;font-family:var(--mono);font-weight:700;border-radius:4px;cursor:pointer">⚡ Calcular Neutralización</button>
+          </div>
+
+          <!-- RESULTADO DE NEUTRALIZACIÓN -->
+          <div id="cheat-calc-results" style="background:#02070d;border:1px solid var(--line);border-radius:6px;padding:12px;font-family:var(--mono);font-size:.82rem">
+            <div style="color:var(--cyan);font-weight:700;margin-bottom:6px">🎯 PLAN DE NEUTRALIZACIÓN PARA <span id="cheat-target-kcal" style="color:#ffb703">900</span> KCAL:</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px">
+              <div style="background:#05131a;border:1px solid var(--line);border-radius:4px;padding:8px">
+                <div style="color:var(--muted);font-size:.72rem">Opción A: Elíptica Synchro (145W)</div>
+                <div style="font-size:1.1rem;font-weight:900;color:var(--accent)" id="cheat-res-cardio">~60 min</div>
+                <div style="color:var(--muted);font-size:.7rem">A ~15 kcal/min de quema real</div>
+              </div>
+              <div style="background:#05131a;border:1px solid var(--line);border-radius:4px;padding:8px">
+                <div style="color:var(--muted);font-size:.72rem">Opción B: Paseos con Ana</div>
+                <div style="font-size:1.1rem;font-weight:900;color:#00ff66" id="cheat-res-walks">~3.6 horas (o 3 paseos de 1h)</div>
+                <div style="color:var(--muted);font-size:.7rem">A ~250 kcal/h de caminata activa</div>
+              </div>
+              <div style="background:#05131a;border:1px solid var(--line);border-radius:4px;padding:8px">
+                <div style="color:var(--muted);font-size:.72rem">Opción C: Déficit Repartido</div>
+                <div style="font-size:1.1rem;font-weight:900;color:var(--cyan)" id="cheat-res-split">-450 kcal / día (2 días)</div>
+                <div style="color:var(--muted);font-size:.7rem">Ajuste de comidas posteriores</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1983,6 +2064,137 @@
       }
     }
 
+    // --- DBZ SOUND FX ENGINE (WEB AUDIO API NATIVA) ---
+    let soundEnabled = localStorage.getItem('scouter_sound_enabled') !== 'false';
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    const btnSoundToggle = document.getElementById('btn-sound-toggle');
+    function updateSoundToggleBtn() {
+      if (btnSoundToggle) {
+        btnSoundToggle.textContent = soundEnabled ? '🔊 FX' : '🔇 FX';
+        btnSoundToggle.style.color = soundEnabled ? '#ffb703' : 'var(--muted)';
+        btnSoundToggle.style.borderColor = soundEnabled ? '#ffb703' : 'var(--line)';
+      }
+    }
+    updateSoundToggleBtn();
+    btnSoundToggle?.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('scouter_sound_enabled', soundEnabled);
+      updateSoundToggleBtn();
+      if (soundEnabled) playScouterBeep();
+    });
+
+    function playScouterBeep() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        [1200, 1600, 2100].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+          gain.gain.setValueAtTime(0.04, now + idx * 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.035);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.04);
+          osc.stop(now + idx * 0.04 + 0.035);
+        });
+      } catch (e) {}
+    }
+
+    function playKiPowerUp() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(80, now);
+        osc.frequency.exponentialRampToValueAtTime(320, now + 0.4);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(220, now);
+        filter.frequency.exponentialRampToValueAtTime(1600, now + 0.4);
+
+        gain.gain.setValueAtTime(0.01, now);
+        gain.gain.linearRampToValueAtTime(0.12, now + 0.2);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } catch (e) {}
+    }
+
+    function playInstantTransmission() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1900, now);
+        osc.frequency.exponentialRampToValueAtTime(260, now + 0.1);
+
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.12);
+      } catch (e) {}
+    }
+
+    function playShenronRoar() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        [261.63, 329.63, 392.00, 523.25].forEach(f => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now);
+          osc.frequency.exponentialRampToValueAtTime(f * 1.5, now + 0.6);
+
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.8);
+        });
+      } catch (e) {}
+    }
+
     // --- TOAST NOTIFICATION ---
     function showToast(msg) {
       toast.textContent = msg;
@@ -2057,6 +2269,7 @@
 
     waterButtons.forEach(btn => {
       btn.addEventListener('click', () => {
+        playInstantTransmission();
         fWater.value = btn.dataset.val;
         syncWaterUI(btn.dataset.val);
         updateZenkaiReadiness();
@@ -2303,20 +2516,101 @@
       saveLogs(logs);
 
       showToast(`✅ TELEMETRÍA DEL ${entry.date} GRABADA CON ÉXITO`);
+      playKiPowerUp();
       renderStats();
       syncWithGitHub(true);
     });
 
     // --- RECARGAR DATOS DEL EXCEL ---
     btnReloadExcel?.addEventListener('click', () => {
+      playInstantTransmission();
       saveLogs(EXCEL_SEED_LOGS);
       showToast('📥 Datos del Excel sincronizados con éxito');
       renderStats();
     });
 
+    // --- RESUMEN WHATSAPP ---
+    const btnExportWhatsApp = document.getElementById('btn-export-whatsapp');
+    btnExportWhatsApp?.addEventListener('click', () => {
+      playInstantTransmission();
+      const logs = loadLogs();
+      const latestWeight = logs.find(l => l.weight > 0)?.weight || 96.0;
+      const totalLoss = (108.0 - latestWeight).toFixed(1);
+
+      let streak = 0;
+      for (const log of logs) {
+        if (log.alcohol === 'NO') streak++;
+        else break;
+      }
+
+      const walks = logs.filter(l => l.walk === 'SI' || l.walk === 'OTRO').length;
+      let sumCardio = 0;
+      logs.forEach(l => sumCardio += (parseFloat(l.cardioKcal) || 0));
+
+      const summaryText = `🥋 *RESUMEN SEGUIMIENTO SAIYAJIN* 🥋\n` +
+        `📅 *Fecha:* ${new Date().toLocaleDateString('es-ES')}\n\n` +
+        `⚖️ *Peso actual:* ${parseFloat(latestWeight).toFixed(1)} kg (-${totalLoss} kg logrados)\n` +
+        `⚡ *Fase activa:* Kaio-Ken x10 (Próximo objetivo: SSJ1 a 93.0 kg)\n` +
+        `🔥 *Cardio Elíptica acumulado:* ${Math.round(sumCardio).toLocaleString('es-ES')} kcal\n` +
+        `🚶 *Paseos con Ana:* ${walks} caminatas registradas\n` +
+        `🚫 *Racha 0% Alcohol:* ${streak} días consecutivos\n` +
+        `🎯 *Meta final:* 90.0 kg (faltan ${(latestWeight - 90.0).toFixed(1)} kg)\n\n` +
+        `«Hay que trabajar, aprender, comer, descansar y también jugar» 🐢✨`;
+
+      navigator.clipboard.writeText(summaryText).then(() => {
+        showToast('📱 ¡Resumen copiado! Pégalo en WhatsApp');
+      }).catch(() => {
+        showToast('⚠️ No se pudo acceder al portapapeles');
+      });
+    });
+
+    // --- COMPENSADOR DE CHEAT MEAL ---
+    function initCheatCompensator() {
+      const fCheatKcal = document.getElementById('f-cheat-kcal');
+      const btnCalcCheat = document.getElementById('btn-calc-cheat');
+      const cheatPresets = document.querySelectorAll('.btn-cheat-preset');
+      const elTargetKcal = document.getElementById('cheat-target-kcal');
+      const elResCardio = document.getElementById('cheat-res-cardio');
+      const elResWalks = document.getElementById('cheat-res-walks');
+      const elResSplit = document.getElementById('cheat-res-split');
+
+      function calculateCheat(kcal) {
+        const val = Math.max(50, parseInt(kcal) || 900);
+        if (elTargetKcal) elTargetKcal.textContent = val.toLocaleString('es-ES');
+
+        const minsCardio = Math.round(val / 15);
+        if (elResCardio) elResCardio.textContent = `~${minsCardio} min`;
+
+        const hoursWalk = (val / 250).toFixed(1);
+        if (elResWalks) elResWalks.textContent = `~${hoursWalk} horas (o ${Math.ceil(val / 250)} paseos de 1h)`;
+
+        const splitVal = Math.round(val / 2);
+        if (elResSplit) elResSplit.textContent = `-${splitVal} kcal / día (2 días)`;
+      }
+
+      cheatPresets.forEach(b => {
+        b.addEventListener('click', () => {
+          playScouterBeep();
+          if (fCheatKcal) fCheatKcal.value = b.dataset.kcal;
+          calculateCheat(b.dataset.kcal);
+        });
+      });
+
+      btnCalcCheat?.addEventListener('click', () => {
+        playInstantTransmission();
+        calculateCheat(fCheatKcal?.value);
+      });
+
+      fCheatKcal?.addEventListener('input', () => {
+        calculateCheat(fCheatKcal.value);
+      });
+    }
+    initCheatCompensator();
+
     // --- PESTAÑAS ---
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        playScouterBeep();
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const targetTab = btn.dataset.tab;
@@ -2347,6 +2641,44 @@
         else break;
       }
       document.getElementById('stat-alcohol-streak').textContent = `${streak} d`;
+
+      // Render 7 Bolas de Dragón (Racha Shenron)
+      const dragonContainer = document.getElementById('dragon-balls-container');
+      const dragonCount = document.getElementById('dragon-streak-count');
+      const shenronBanner = document.getElementById('shenron-summon-banner');
+
+      if (dragonContainer) {
+        const activeBalls = Math.min(7, streak);
+
+        if (activeBalls >= 7) {
+          if (dragonCount) dragonCount.innerHTML = '⚡ 7 / 7 ¡SHENRON INVOCADO!';
+          if (shenronBanner) {
+            if (shenronBanner.hidden) playShenronRoar();
+            shenronBanner.hidden = false;
+          }
+        } else {
+          if (dragonCount) dragonCount.textContent = `${activeBalls} / 7 Esferas reunidas (${7 - activeBalls} para Shenron)`;
+          if (shenronBanner) shenronBanner.hidden = true;
+        }
+
+        dragonContainer.innerHTML = [1, 2, 3, 4, 5, 6, 7].map((num, i) => {
+          const isCollected = i < activeBalls;
+          const bg = isCollected ? 'radial-gradient(circle at 35% 35%, #ffd166 0%, #ff7700 70%, #d84a00 100%)' : '#141c24';
+          const border = isCollected ? '2px solid #ffd166' : '1px solid #253342';
+          const shadow = isCollected ? 'box-shadow: 0 0 14px rgba(255,183,3,0.8), inset 0 0 6px rgba(255,255,255,0.6)' : '';
+          const starColor = isCollected ? '#b51a00' : '#455566';
+          const opacity = isCollected ? '1' : '0.4';
+
+          return `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:40px;height:40px;border-radius:50%;background:${bg};${border};${shadow};opacity:${opacity};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s" title="Esfera ${num} de 7 estrellas" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">
+                <span style="color:${starColor};font-size:.7rem;font-weight:900;letter-spacing:-1px">${num}★</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:.65rem;color:${isCollected ? '#ffb703' : 'var(--muted)'}">Día ${num}</span>
+            </div>
+          `;
+        }).join('');
+      }
 
       // Paseos con Ana
       const walks = logs.filter(l => l.walk === 'SI' || l.walk === 'OTRO').length;
