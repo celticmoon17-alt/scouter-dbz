@@ -1,21 +1,21 @@
 [
   {
-    "id": "1c850941-399e-40ca-9289-dce40612a130",
+    "id": "6a675c21-fafd-456a-817a-c4cfee124744",
     "date": "2026-11-11",
     "dayName": "MIÉRCOLES",
     "weight": null,
-    "estimatedCalories": 1500,
+    "estimatedCalories": 1560,
     "caloriesOverride": null,
-    "estimatedProtein": 115,
+    "estimatedProtein": 112,
     "proteinOverride": null,
     "caloriesBreakdown": {
-      "total": 1500,
-      "totalProt": 115,
-      "bKcal": 420,
+      "total": 1560,
+      "totalProt": 112,
+      "bKcal": 480,
       "lKcal": 480,
       "dKcal": 450,
       "extraKcal": 150,
-      "bProt": 38,
+      "bProt": 35,
       "lProt": 28,
       "dProt": 25,
       "extraProt": 24
@@ -31,7 +31,7 @@
     ],
     "bodyStatus": "100% Operativo",
     "bodyNotes": "He dormido poco y mal por estar inquieto",
-    "breakfast": "Tostadas",
+    "breakfast": "Porridge",
     "lunch": "Quiché casera fit",
     "dinner": "Cuenco de langostinos con piña",
     "coffee": "1",
@@ -40,10 +40,10 @@
     "routineDone": "SI",
     "routinePlan": "🚶 Miércoles: DESCANSO ACTIVO",
     "exercises": [],
-    "walk": "OTRO",
+    "walk": "NO",
     "walkNotes": "",
     "cardioImage": "",
-    "createdAt": "2026-11-11T04:27:10.754Z"
+    "createdAt": "2026-11-11T20:09:21.513Z"
   },
   {
     "id": "64a11d37-dc4d-4bde-8dd8-fc123c33b9e2",
