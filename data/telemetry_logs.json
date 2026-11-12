@@ -1,22 +1,22 @@
 [
   {
-    "id": "0a466e52-8377-4d29-b03f-a3c9a1e5fda6",
+    "id": "63f51a49-66d7-40d3-9acc-6512e016a222",
     "date": "2026-11-12",
     "dayName": "JUEVES",
     "weight": 95.5,
-    "estimatedCalories": 630,
+    "estimatedCalories": 1295,
     "caloriesOverride": null,
-    "estimatedProtein": 59,
+    "estimatedProtein": 138,
     "proteinOverride": null,
     "caloriesBreakdown": {
-      "total": 630,
-      "totalProt": 59,
+      "total": 1295,
+      "totalProt": 138,
       "bKcal": 480,
-      "lKcal": 0,
+      "lKcal": 670,
       "dKcal": 0,
-      "extraKcal": 150,
+      "extraKcal": 145,
       "bProt": 35,
-      "lProt": 0,
+      "lProt": 79,
       "dProt": 0,
       "extraProt": 24
     },
@@ -31,10 +31,10 @@
     "bodyStatus": "100% Operativo",
     "bodyNotes": "",
     "breakfast": "Porridge",
-    "lunch": "",
+    "lunch": "3 filetes de cinta de lomo,  150g de batata descongelada en airfryer y un plato de puré de calabaza e hinojo. Postre: medio bote de kefir del Carrefour con un scoop de proteínas",
     "dinner": "",
     "coffee": "1",
-    "tea": "1",
+    "tea": "0",
     "alcohol": "NO",
     "routineDone": "SI",
     "routinePlan": "🦵 Jueves: DÍA DE PIERNA",
@@ -42,7 +42,7 @@
     "walk": "NO",
     "walkNotes": "",
     "cardioImage": "",
-    "createdAt": "2026-11-12T07:24:08.949Z"
+    "createdAt": "2026-11-12T12:14:31.675Z"
   },
   {
     "id": "6a675c21-fafd-456a-817a-c4cfee124744",
