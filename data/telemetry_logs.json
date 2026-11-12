@@ -1,23 +1,23 @@
 [
   {
-    "id": "63f51a49-66d7-40d3-9acc-6512e016a222",
+    "id": "caf5838e-d9cf-48e0-a2c0-6722580dd068",
     "date": "2026-11-12",
     "dayName": "JUEVES",
     "weight": 95.5,
-    "estimatedCalories": 1295,
+    "estimatedCalories": 1750,
     "caloriesOverride": null,
-    "estimatedProtein": 138,
+    "estimatedProtein": 163,
     "proteinOverride": null,
     "caloriesBreakdown": {
-      "total": 1295,
-      "totalProt": 138,
+      "total": 1750,
+      "totalProt": 163,
       "bKcal": 480,
       "lKcal": 670,
-      "dKcal": 0,
-      "extraKcal": 145,
+      "dKcal": 450,
+      "extraKcal": 150,
       "bProt": 35,
       "lProt": 79,
-      "dProt": 0,
+      "dProt": 25,
       "extraProt": 24
     },
     "sleepHours": 7,
@@ -32,9 +32,9 @@
     "bodyNotes": "",
     "breakfast": "Porridge",
     "lunch": "3 filetes de cinta de lomo,  150g de batata descongelada en airfryer y un plato de puré de calabaza e hinojo. Postre: medio bote de kefir del Carrefour con un scoop de proteínas",
-    "dinner": "",
+    "dinner": "500 ml de caldo aneto con fideos y 85 gramos de lomo Isidro Gómez",
     "coffee": "1",
-    "tea": "0",
+    "tea": "1",
     "alcohol": "NO",
     "routineDone": "SI",
     "routinePlan": "🦵 Jueves: DÍA DE PIERNA",
@@ -42,7 +42,7 @@
     "walk": "NO",
     "walkNotes": "",
     "cardioImage": "",
-    "createdAt": "2026-11-12T12:14:31.675Z"
+    "createdAt": "2026-11-12T20:13:20.390Z"
   },
   {
     "id": "6a675c21-fafd-456a-817a-c4cfee124744",
