@@ -1,6 +1,6 @@
 [
   {
-    "id": "caf5838e-d9cf-48e0-a2c0-6722580dd068",
+    "id": "636c149e-19d2-4b29-8cc6-ef09cda0f9c3",
     "date": "2026-11-12",
     "dayName": "JUEVES",
     "weight": 95.5,
@@ -39,10 +39,10 @@
     "routineDone": "SI",
     "routinePlan": "🦵 Jueves: DÍA DE PIERNA",
     "exercises": [],
-    "walk": "NO",
-    "walkNotes": "",
+    "walk": "SI",
+    "walkNotes": "2h de paseo",
     "cardioImage": "",
-    "createdAt": "2026-11-12T20:13:20.390Z"
+    "createdAt": "2026-11-12T20:14:14.563Z"
   },
   {
     "id": "6a675c21-fafd-456a-817a-c4cfee124744",
