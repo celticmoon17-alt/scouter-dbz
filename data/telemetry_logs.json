@@ -1,29 +1,29 @@
 [
   {
-    "id": "9c64817e-8154-4cae-a692-e27c1d200cf1",
+    "id": "0a466e52-8377-4d29-b03f-a3c9a1e5fda6",
     "date": "2026-11-12",
     "dayName": "JUEVES",
     "weight": 95.5,
-    "estimatedCalories": 625,
+    "estimatedCalories": 630,
     "caloriesOverride": null,
     "estimatedProtein": 59,
     "proteinOverride": null,
     "caloriesBreakdown": {
-      "total": 625,
+      "total": 630,
       "totalProt": 59,
       "bKcal": 480,
       "lKcal": 0,
       "dKcal": 0,
-      "extraKcal": 145,
+      "extraKcal": 150,
       "bProt": 35,
       "lProt": 0,
       "dProt": 0,
       "extraProt": 24
     },
-    "sleepHours": 7.5,
-    "sleepQuality": "4",
-    "energy": "Alta",
-    "water": "2.5L",
+    "sleepHours": 7,
+    "sleepQuality": "5",
+    "energy": "Modo Androide",
+    "water": "1.5L",
     "supplements": [
       "Proteína Whey",
       "Creatina"
@@ -34,7 +34,7 @@
     "lunch": "",
     "dinner": "",
     "coffee": "1",
-    "tea": "0",
+    "tea": "1",
     "alcohol": "NO",
     "routineDone": "SI",
     "routinePlan": "🦵 Jueves: DÍA DE PIERNA",
@@ -42,7 +42,7 @@
     "walk": "NO",
     "walkNotes": "",
     "cardioImage": "",
-    "createdAt": "2026-11-12T07:07:40.349Z"
+    "createdAt": "2026-11-12T07:24:08.949Z"
   },
   {
     "id": "6a675c21-fafd-456a-817a-c4cfee124744",
