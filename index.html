@@ -728,7 +728,7 @@
           <span>SEGUIMIENTO SAIYAJIN</span>
         </div>
         <div class="header-meta" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span>SYS: TELEMETRÍA SAIYAJIN V2.0</span>
+          <span id="app-version-tag">SYS: TELEMETRÍA SAIYAJIN v2.1</span>
           <button type="button" id="btn-cloud-sync" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#05131a;border:1px solid #00f0ff;color:#00f0ff;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,240,255,0.2)">☁️ Sincronizar Nube</button>
           <button type="button" id="btn-sound-toggle" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 8px;background:#151205;border:1px solid #ffb703;color:#ffb703;border-radius:4px;cursor:pointer" title="Activar/Silenciar efectos de sonido DBZ">🔊 FX</button>
           <button type="button" id="btn-pwa-install" style="font-family:var(--mono);font-size:.76rem;font-weight:700;padding:5px 10px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,255,102,0.25)">📲 INSTALAR EN MÓVIL</button>
@@ -790,7 +790,7 @@
         <span class="tab-icon">🧬</span> <span>Regeneración</span>
       </button>
       <button type="button" class="tab-btn" data-tab="tab-scouter">
-        <span class="tab-icon">🤖</span> <span>Scanner DBZ</span>
+        <span class="tab-icon">🤖</span> <span>Scouter</span>
       </button>
     </nav>
 
@@ -1274,17 +1274,25 @@
           </div>
 
           <!-- BOTONES RÁPIDOS DE COMIDA LIBRE -->
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-            <button type="button" class="btn-cheat-preset" data-kcal="1200" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍕 Pizza + Bebidas (~1.200 kcal)</button>
-            <button type="button" class="btn-cheat-preset" data-kcal="900" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍔 Burger con Patatas (~900 kcal)</button>
-            <button type="button" class="btn-cheat-preset" data-kcal="600" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍣 Sushi Variado (~600 kcal)</button>
-            <button type="button" class="btn-cheat-preset" data-kcal="450" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍰 Postre / Helado (~450 kcal)</button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <button type="button" class="btn-cheat-preset" data-name="Pizza entera y bebidas" data-kcal="1200" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍕 Pizza + Bebidas (~1.200 kcal)</button>
+            <button type="button" class="btn-cheat-preset" data-name="Hamburguesa con patatas fritas" data-kcal="900" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍔 Burger con Patatas (~900 kcal)</button>
+            <button type="button" class="btn-cheat-preset" data-name="Bandeja de sushi variado" data-kcal="600" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍣 Sushi Variado (~600 kcal)</button>
+            <button type="button" class="btn-cheat-preset" data-name="Tarta o helado de postre" data-kcal="450" style="padding:6px 10px;font-family:var(--mono);font-size:.76rem;background:#0d1822;border:1px solid var(--line);color:var(--text);border-radius:4px;cursor:pointer">🍰 Postre / Helado (~450 kcal)</button>
+          </div>
+
+          <!-- CUADRO DE TEXTO PARA ESCRIBIR LA CHEAT MEAL -->
+          <div style="margin-bottom:12px">
+            <label for="f-cheat-desc" style="display:block;font-family:var(--mono);font-size:.78rem;color:var(--cyan);margin-bottom:5px">
+              📝 Escribe lo que has comido (calcula las calorías automáticamente al escribir):
+            </label>
+            <textarea id="f-cheat-desc" placeholder="Ej.: Hamburguesa con patatas, 2 cervezas y un helado de chocolate..." style="width:100%;min-height:58px;padding:8px 10px;background:#090e13;border:1px solid #ff770088;border-radius:4px;color:var(--text);font-family:var(--sans);font-size:.85rem;resize:vertical"></textarea>
           </div>
 
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-            <label style="font-family:var(--mono);font-size:.8rem;color:var(--text)">Kcal de superávit:</label>
-            <input type="number" id="f-cheat-kcal" value="900" step="50" style="width:120px;padding:6px 10px;background:#090e13;border:1px solid #ff7700;color:#ff7700;font-weight:700;font-family:var(--mono);border-radius:4px">
-            <button type="button" id="btn-calc-cheat" style="padding:6px 14px;background:#1a0f05;border:1px solid #ff7700;color:#ff7700;font-family:var(--mono);font-weight:700;border-radius:4px;cursor:pointer">⚡ Calcular Neutralización</button>
+            <label style="font-family:var(--mono);font-size:.8rem;color:var(--text)">Kcal estimadas:</label>
+            <input type="number" id="f-cheat-kcal" value="900" step="50" style="width:110px;padding:6px 10px;background:#090e13;border:1px solid #ff7700;color:#ff7700;font-weight:700;font-family:var(--mono);border-radius:4px">
+            <button type="button" id="btn-calc-cheat" style="padding:6px 14px;background:#1a0f05;border:1px solid #ff7700;color:#ff7700;font-family:var(--mono);font-weight:700;border-radius:4px;cursor:pointer">⚡ Recalcular Plan</button>
           </div>
 
           <!-- RESULTADO DE NEUTRALIZACIÓN -->
@@ -1414,7 +1422,7 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 3: SCANNER ANDROIDE DBZ (DR. GERO // RED RIBBON) -->
+    <!-- PESTAÑA 3: SCOUTER DR. GERO // RED RIBBON -->
     <section id="tab-scouter" hidden>
       
       <!-- CABECERA SCOUTER TERMINAL -->
@@ -1422,7 +1430,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:10px">
             <span class="rr-badge">RR</span>
-            <span style="font-family:var(--mono);color:#00ff66;font-weight:700;letter-spacing:2px;font-size:1.05rem">RED RIBBON // DR. GERO BIOCYBORG SCANNER</span>
+            <span style="font-family:var(--mono);color:#00ff66;font-weight:700;letter-spacing:2px;font-size:1.05rem">RED RIBBON // DR. GERO BIOCYBORG SCOUTER</span>
           </div>
           <div style="font-family:var(--mono);font-size:.76rem;color:#ffb703;letter-spacing:1px">
             SYS_ID: CYBORG_D17 // FIRMWARE v4.9.2 // STATUS: ACTIVE
@@ -1490,10 +1498,10 @@
             </div>
           </div>
 
-          <!-- HOLOGRÁFICO 2: MALLA WIREFRAME ANATOMÍA 3D -->
+          <!-- HOLOGRÁFICO 2: RENDIMIENTO BIOMECÁNICO & FUERZA -->
           <div class="scouter-card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <span style="font-family:var(--mono);color:#00ff66;font-weight:700;font-size:.85rem">ESQUEMA 02: MALLA ANATÓMICA WIREFRAME 3D</span>
+              <span style="font-family:var(--mono);color:#00ff66;font-weight:700;font-size:.85rem">ESQUEMA 02: RENDIMIENTO BIOMECÁNICO &amp; FUERZA</span>
               <span class="scouter-formula">Z / A-H2 · [ 73% GOAL ]</span>
             </div>
             
@@ -1617,6 +1625,11 @@
   <div id="toast" class="toast">DATOS REGISTRADOS CORRECTAMENTE</div>
 
   <script>
+    // --- VERSIÓN DE LA APLICACIÓN ---
+    const APP_VERSION = 'v2.1';
+    const appVersionTag = document.getElementById('app-version-tag');
+    if (appVersionTag) appVersionTag.textContent = `SYS: TELEMETRÍA SAIYAJIN ${APP_VERSION.toUpperCase()}`;
+
     // --- RUTINA SEMANAL OFICIAL DEL USUARIO ---
     const WEEKLY_SCHEDULE = {
       1: { name: "🦵 Lunes: DÍA DE PIERNA", desc: "Prensa, Extensión de cuádriceps, Aductor, Abductor y femoral.", exercises: ["Prensa", "Extensión de cuádriceps", "Aductor", "Abductor"] },
@@ -2514,12 +2527,70 @@
     // --- COMPENSADOR DE CHEAT MEAL ---
     function initCheatCompensator() {
       const fCheatKcal = document.getElementById('f-cheat-kcal');
+      const fCheatDesc = document.getElementById('f-cheat-desc');
       const btnCalcCheat = document.getElementById('btn-calc-cheat');
       const cheatPresets = document.querySelectorAll('.btn-cheat-preset');
       const elTargetKcal = document.getElementById('cheat-target-kcal');
       const elResCardio = document.getElementById('cheat-res-cardio');
       const elResWalks = document.getElementById('cheat-res-walks');
       const elResSplit = document.getElementById('cheat-res-split');
+
+      function estimateCheatMealCalories(text) {
+        if (!text || !text.trim()) return 0;
+        const lower = text.toLowerCase();
+        let kcal = 0;
+        let matched = false;
+
+        const beerMatch = lower.match(/(\d+)\s*(?:cervezas?|tercios?|cañas?|botellines?)/);
+        if (beerMatch) { kcal += parseInt(beerMatch[1]) * 150; matched = true; }
+        else if (lower.includes('cerveza') || lower.includes('tercio') || lower.includes('caña')) { kcal += 150; matched = true; }
+
+        const wineMatch = lower.match(/(\d+)\s*(?:copas?\s*de\s*vino|vinos?)/);
+        if (wineMatch) { kcal += parseInt(wineMatch[1]) * 130; matched = true; }
+        else if (lower.includes('vino')) { kcal += 130; matched = true; }
+
+        const drinkMatch = lower.match(/(\d+)\s*(?:copas?|cubatas?|combinados?|gins?|gintonics?)/);
+        if (drinkMatch) { kcal += parseInt(drinkMatch[1]) * 230; matched = true; }
+        else if (lower.includes('copa') || lower.includes('cubata') || lower.includes('gin') || lower.includes('ron') || lower.includes('whisky')) { kcal += 230; matched = true; }
+
+        if (lower.includes('coca') || lower.includes('fanta') || lower.includes('refresco') || lower.includes('soda')) { kcal += 140; matched = true; }
+
+        if (lower.includes('pizza')) {
+          if (lower.includes('media') || lower.includes('mitad') || lower.includes('2 trozos') || lower.includes('3 trozos')) kcal += 600;
+          else if (lower.includes('1 trozo') || lower.includes('un trozo') || lower.includes('una porcion') || lower.includes('una porción')) kcal += 300;
+          else kcal += 1150;
+          matched = true;
+        }
+
+        if (lower.includes('burger') || lower.includes('hamburguesa')) {
+          if (lower.includes('doble') || lower.includes('smash')) kcal += 1050;
+          else kcal += 750;
+          matched = true;
+        }
+
+        if (lower.includes('patata') || lower.includes('patatas') || lower.includes('fries') || lower.includes('bravas')) {
+          kcal += 420;
+          matched = true;
+        }
+
+        if (lower.includes('nachos')) { kcal += 680; matched = true; }
+        if (lower.includes('kebab') || lower.includes('durum')) { kcal += 850; matched = true; }
+        if (lower.includes('sushi') || lower.includes('maki')) { kcal += 580; matched = true; }
+        if (lower.includes('croquetas')) { kcal += 400; matched = true; }
+        if (lower.includes('costillas') || lower.includes('ribs') || lower.includes('alitas')) { kcal += 700; matched = true; }
+        if (lower.includes('taco') || lower.includes('burrito') || lower.includes('quesadilla')) { kcal += 650; matched = true; }
+        if (lower.includes('pasta') || lower.includes('carbonara') || lower.includes('lasaña') || lower.includes('lasagna')) { kcal += 750; matched = true; }
+
+        if (lower.includes('tarta') || lower.includes('pastel') || lower.includes('brownie') || lower.includes('cheesecake')) { kcal += 480; matched = true; }
+        if (lower.includes('helado')) { kcal += 350; matched = true; }
+        if (lower.includes('chocolate') || lower.includes('choc')) { kcal += 250; matched = true; }
+        if (lower.includes('donut') || lower.includes('croissant') || lower.includes('churros') || lower.includes('dulce')) { kcal += 380; matched = true; }
+
+        if (!matched && text.trim().length > 3) {
+          kcal = 600;
+        }
+        return Math.round(kcal);
+      }
 
       function calculateCheat(kcal) {
         const val = Math.max(50, parseInt(kcal) || 900);
@@ -2535,9 +2606,18 @@
         if (elResSplit) elResSplit.textContent = `-${splitVal} kcal / día (2 días)`;
       }
 
+      fCheatDesc?.addEventListener('input', () => {
+        const est = estimateCheatMealCalories(fCheatDesc.value);
+        if (est > 0) {
+          if (fCheatKcal) fCheatKcal.value = est;
+          calculateCheat(est);
+        }
+      });
+
       cheatPresets.forEach(b => {
         b.addEventListener('click', () => {
           playScouterBeep();
+          if (fCheatDesc) fCheatDesc.value = b.dataset.name || '';
           if (fCheatKcal) fCheatKcal.value = b.dataset.kcal;
           calculateCheat(b.dataset.kcal);
         });
@@ -2655,32 +2735,38 @@
       const nextStageTxt = document.getElementById('saiyajin-next-stage-txt');
       if (transGrid) {
         const stages = [
-          { name: 'Estado Base (Gravedad x1)', weight: 108.0, aura: '#6c757d', icon: '🥋', rank: 'FASE 0', desc: 'Punto de partida físico' },
-          { name: 'Entrenamiento Kaio-Sama', weight: 102.0, aura: '#00f0ff', icon: '🐢', rank: 'FASE 1', desc: 'Disciplina y resistencia adquirida' },
-          { name: 'Kaio-Ken x10', weight: 96.0, aura: '#ff0055', icon: '🔥', rank: 'FASE 2', desc: 'Aura Carmesí activa (-12.0 kg)' },
-          { name: 'Super Saiyajin 1', weight: 93.0, aura: '#ffb703', icon: '⚡', rank: 'FASE 3', desc: 'Poder Dorado despertado' },
-          { name: 'Super Saiyajin 2 / Definitivo', weight: 90.0, aura: '#00ff66', icon: '👑', rank: 'FASE FINAL', desc: 'Meta final de recomposición' }
+          { name: 'Kaio-Ken', weight: 100.0, aura: '#ff0055', icon: '🔥', rank: 'FASE 1', desc: 'Aura Carmesí activa (-8.0 kg)' },
+          { name: 'Super Saiyajin 1', weight: 98.0, aura: '#ffd700', icon: '⚡', rank: 'FASE 2', desc: 'Poder Dorado despertado (-10.0 kg)' },
+          { name: 'Super Saiyajin 2', weight: 96.0, aura: '#00ff66', icon: '💥', rank: 'FASE 3', desc: 'Relámpagos bioeléctricos (-12.0 kg)' },
+          { name: 'Super Saiyajin 3', weight: 94.0, aura: '#ff7700', icon: '🦁', rank: 'FASE 4', desc: 'Desbordamiento de Ki (-14.0 kg)' },
+          { name: 'Super Saiyajin 4', weight: 92.0, aura: '#ff1493', icon: '🦍', rank: 'FASE 5', desc: 'Poder primitivo Ozaru (-16.0 kg)' },
+          { name: 'Super Saiyajin God', weight: 90.0, aura: '#ff0033', icon: '🔴', rank: 'FASE 6', desc: 'Ki Divino alcanzado (-18.0 kg)' },
+          { name: 'Super Saiyajin Blue', weight: 88.0, isUnder90: true, aura: '#00f0ff', icon: '🔵', rank: 'FASE GOD', desc: 'Control divino absoluto (< 90.0 kg)' }
         ];
 
-        let activeIdx = 0;
+        let activeIdx = -1;
         for (let i = 0; i < stages.length; i++) {
-          if (latestWeight <= stages[i].weight) {
+          if (stages[i].isUnder90 ? latestWeight < 90.0 : latestWeight <= stages[i].weight) {
             activeIdx = i;
           }
         }
 
-        const nextStage = stages[Math.min(stages.length - 1, activeIdx + 1)];
-        const remToNext = Math.max(0, latestWeight - nextStage.weight);
+        const nextStage = activeIdx >= 0 && activeIdx < stages.length - 1 ? stages[activeIdx + 1] : (activeIdx === -1 ? stages[0] : null);
+        const remToNext = nextStage ? (nextStage.isUnder90 ? Math.max(0, latestWeight - 90.0) : Math.max(0, latestWeight - nextStage.weight)) : 0;
+
         if (nextStageTxt) {
-          if (latestWeight <= 90.0) {
-            nextStageTxt.innerHTML = '🏆 <strong>¡ESTADO DEFINITIVO ALCANZADO (90.0 KG)!</strong>';
+          if (latestWeight < 90.0) {
+            nextStageTxt.innerHTML = '🏆 <strong>¡SUPER SAIYAJIN BLUE ACTIVO (< 90.0 KG)!</strong> Control divino absoluto y recomposición completada.';
+          } else if (nextStage) {
+            const targetWeightStr = nextStage.isUnder90 ? '< 90.0 kg' : `${nextStage.weight.toFixed(1)} kg`;
+            nextStageTxt.innerHTML = `Próximo Despertar: <strong>${nextStage.name}</strong> a ${targetWeightStr} (faltan ~${remToNext.toFixed(1)} kg)`;
           } else {
-            nextStageTxt.innerHTML = `Próximo Despertar: <strong>${nextStage.name}</strong> a ${nextStage.weight.toFixed(1)} kg (faltan ~${remToNext.toFixed(1)} kg)`;
+            nextStageTxt.innerHTML = '🏆 <strong>¡MÁXIMA TRANSFORMACIÓN ALCANZADA!</strong>';
           }
         }
 
         transGrid.innerHTML = stages.map((s, idx) => {
-          const isPassed = latestWeight < s.weight && idx < activeIdx;
+          const isPassed = s.isUnder90 ? latestWeight < 90.0 : (latestWeight < s.weight && idx < activeIdx);
           const isCurrent = idx === activeIdx;
 
           let badgeHtml = '';
@@ -2688,15 +2774,17 @@
           let bgStyle = 'background: #050c14';
 
           if (isCurrent) {
-            badgeHtml = `<span style="background:${s.aura};color:#fff;font-weight:900;padding:2px 8px;border-radius:4px;font-size:.7rem;box-shadow:0 0 10px ${s.aura}">🔥 ESTADO ACTUAL</span>`;
+            badgeHtml = `<span style="background:${s.aura};color:#000;font-weight:900;padding:2px 8px;border-radius:4px;font-size:.7rem;box-shadow:0 0 10px ${s.aura}">🔥 ESTADO ACTUAL</span>`;
             borderStyle = `border: 2px solid ${s.aura};box-shadow: 0 0 16px ${s.aura}44`;
             bgStyle = `background: linear-gradient(180deg, ${s.aura}15 0%, #050c14 100%)`;
           } else if (isPassed) {
             badgeHtml = `<span style="background:#00ff6622;color:#00ff66;font-weight:700;padding:2px 6px;border-radius:4px;font-size:.7rem;border:1px solid #00ff6644">✅ SUPERADO</span>`;
           } else {
-            const diff = (latestWeight - s.weight).toFixed(1);
+            const diff = s.isUnder90 ? (latestWeight - 90.0).toFixed(1) : (latestWeight - s.weight).toFixed(1);
             badgeHtml = `<span style="background:#151a22;color:var(--muted);padding:2px 6px;border-radius:4px;font-size:.7rem">🔒 Faltan ${diff} kg</span>`;
           }
+
+          const targetGoalStr = s.isUnder90 ? '< 90.0 kg' : `${s.weight.toFixed(1)} kg`;
 
           return `
             <div style="${bgStyle};${borderStyle};border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:6px;font-family:var(--mono)">
@@ -2706,7 +2794,7 @@
               </div>
               <strong style="color:${isCurrent ? s.aura : (isPassed ? '#00ff66' : 'var(--text)')};font-size:.86rem;margin-top:2px">${s.name}</strong>
               <div style="font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between">
-                <span>Objetivo: <strong>${s.weight.toFixed(1)} kg</strong></span>
+                <span>Objetivo: <strong>${targetGoalStr}</strong></span>
                 <span style="color:${s.aura}">${s.rank}</span>
               </div>
               <div style="font-size:.72rem;color:var(--muted);line-height:1.3;margin-top:2px">${s.desc}</div>
