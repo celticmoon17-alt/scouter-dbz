@@ -865,8 +865,8 @@
             <div class="field">
               <label for="f-tea">🍵 Tés Tomados</label>
               <select id="f-tea">
-                <option value="0" selected>0</option>
-                <option value="1">1 té</option>
+                <option value="0">0</option>
+                <option value="1" selected>1 té</option>
                 <option value="2">2 tés</option>
                 <option value="3">3 tés</option>
                 <option value="4+">4 o más</option>
@@ -1349,57 +1349,68 @@
     <!-- PESTAÑA: CÁMARA DE REGENERACIÓN // SCANNER CORPORAL -->
     <section id="tab-regen" hidden>
       <div class="card card-hud">
-        <div class="card-title">🧬 CÁMARA DE REGENERACIÓN // FOTOS DE PROGRESO &amp; BIO-MÉTRICAS</div>
+        <div class="card-title">🧬 CÁMARA DE REGENERACIÓN // REGISTRO DE PERÍMETROS CORPORALES</div>
         <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">
-          Registro visual y comparativo de recomposición corporal desde el inicio en 108.0 kg hasta los 96.0 kg actuales. Las fotos se almacenan únicamente de forma privada en tu dispositivo local.
+          Control métrico y evolución de recomposición corporal. Registra periódicamente tus perímetros en centímetros para seguir el histórico con fecha y calcular variaciones.
         </div>
 
-        <!-- COMPARADOR ANTES / AHORA -->
-        <div class="grid-2">
-          <div style="background:#050c14;border:1px solid var(--line);border-radius:8px;padding:14px;text-align:center">
-            <div style="font-family:var(--mono);font-weight:700;color:var(--accent);font-size:.88rem;margin-bottom:8px">PUNTO DE PARTIDA // 108.0 KG (26/07)</div>
-            <div class="drop-zone" id="regen-drop-before" style="min-height:220px;display:flex;flex-direction:column;justify-content:center;align-items:center">
-              <input type="file" id="regen-file-before" accept="image/*" style="display:none">
-              <img id="regen-img-before" src="" style="max-height:200px;border-radius:6px" hidden>
-              <div id="regen-text-before" class="drop-zone-text">📸 Pulsa aquí para añadir tu foto inicial (108 kg)</div>
+        <!-- FORMULARIO DE NUEVA MEDICIÓN -->
+        <div style="background:#050c14;border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:16px">
+          <div style="font-family:var(--mono);color:var(--cyan);font-size:.85rem;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <span>📏 NUEVA MEDICIÓN CORPORAL:</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <label for="f-measure-date" style="font-size:.74rem;color:var(--muted)">Fecha:</label>
+              <input type="date" id="f-measure-date" style="padding:4px 8px;background:#090e13;border:1px solid var(--line);color:var(--cyan);border-radius:4px;font-family:var(--mono);font-size:.8rem">
             </div>
           </div>
-
-          <div style="background:#050c14;border:1px solid #00ff6666;border-radius:8px;padding:14px;text-align:center">
-            <div style="font-family:var(--mono);font-weight:700;color:#00ff66;font-size:.88rem;margin-bottom:8px">ESTADO ACTUAL // 96.0 KG (-12.0 KG)</div>
-            <div class="drop-zone" id="regen-drop-current" style="min-height:220px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-color:#00ff6666">
-              <input type="file" id="regen-file-current" accept="image/*" style="display:none">
-              <img id="regen-img-current" src="" style="max-height:200px;border-radius:6px" hidden>
-              <div id="regen-text-current" class="drop-zone-text">📸 Pulsa aquí para añadir tu foto actual (96 kg)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- BIO-MEDIDAS CORPORALES (CINTURA, PECHO, ETC) -->
-        <div style="margin-top:16px;background:#050c14;border:1px solid var(--line);border-radius:8px;padding:14px">
-          <div style="font-family:var(--mono);color:var(--cyan);font-size:.85rem;margin-bottom:10px">
-            📏 PERÍMETROS CORPORALES (CM) [OPCIONAL]:
-          </div>
-          <div class="grid-4" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+          <div class="grid-4" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px">
             <div>
               <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Cintura (cm)</label>
-              <input type="number" step="0.5" id="f-measure-waist" placeholder="Ej.: 98" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+              <input type="number" step="0.5" id="f-measure-waist" placeholder="Ej.: 98" style="width:100%;padding:8px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px;font-family:var(--mono)">
             </div>
             <div>
               <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Pecho (cm)</label>
-              <input type="number" step="0.5" id="f-measure-chest" placeholder="Ej.: 112" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+              <input type="number" step="0.5" id="f-measure-chest" placeholder="Ej.: 112" style="width:100%;padding:8px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px;font-family:var(--mono)">
             </div>
             <div>
               <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Brazo (cm)</label>
-              <input type="number" step="0.5" id="f-measure-arm" placeholder="Ej.: 39" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+              <input type="number" step="0.5" id="f-measure-arm" placeholder="Ej.: 39" style="width:100%;padding:8px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px;font-family:var(--mono)">
             </div>
             <div>
               <label style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Muslo (cm)</label>
-              <input type="number" step="0.5" id="f-measure-thigh" placeholder="Ej.: 64" style="width:100%;padding:6px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px">
+              <input type="number" step="0.5" id="f-measure-thigh" placeholder="Ej.: 64" style="width:100%;padding:8px;background:#090e13;border:1px solid var(--line);color:var(--text);border-radius:4px;font-family:var(--mono)">
             </div>
           </div>
-          <button type="button" id="btn-save-measures" style="margin-top:10px;font-family:var(--mono);font-weight:700;font-size:.8rem;padding:6px 14px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer">💾 Guardar Perímetros</button>
+          <div style="display:flex;gap:10px;margin-top:14px;align-items:center;flex-wrap:wrap">
+            <button type="button" id="btn-save-measures" style="font-family:var(--mono);font-weight:700;font-size:.82rem;padding:8px 16px;background:#091c12;border:1px solid #00ff66;color:#00ff66;border-radius:4px;cursor:pointer;box-shadow:0 0 10px rgba(0,255,102,0.2)">💾 Guardar en Histórico</button>
+          </div>
         </div>
+
+        <!-- TABLA HISTÓRICO DE MEDICIONES -->
+        <div style="background:#050c14;border:1px solid var(--line);border-radius:8px;padding:14px">
+          <div style="font-family:var(--mono);color:var(--accent);font-size:.85rem;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+            <span>📜 HISTÓRICO DE PERÍMETROS CORPORALES</span>
+            <span id="regen-history-count" style="font-size:.75rem;color:var(--muted)">0 registros</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.82rem;text-align:left">
+              <thead>
+                <tr style="border-bottom:1px solid var(--line);color:var(--muted);font-size:.74rem">
+                  <th style="padding:8px 6px">FECHA</th>
+                  <th style="padding:8px 6px">CINTURA</th>
+                  <th style="padding:8px 6px">PECHO</th>
+                  <th style="padding:8px 6px">BRAZO</th>
+                  <th style="padding:8px 6px">MUSLO</th>
+                  <th style="padding:8px 6px;text-align:right">ACCIÓN</th>
+                </tr>
+              </thead>
+              <tbody id="regen-history-tbody">
+                <!-- Filas dinámicas -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -2154,6 +2165,10 @@
           else fLunch.value = '';
           if (existing.dinner) fDinner.value = existing.dinner;
           else fDinner.value = '';
+          if (existing.coffee !== undefined) fCoffee.value = existing.coffee;
+          else fCoffee.value = '1';
+          if (existing.tea !== undefined) fTea.value = existing.tea;
+          else fTea.value = '1';
           if (existing.supplements) {
             fSuppProtein.checked = existing.supplements.some(s => s.toLowerCase().includes('prote'));
             fSuppCreatine.checked = existing.supplements.some(s => s.toLowerCase().includes('creatin'));
@@ -2167,6 +2182,8 @@
           fProteinOverride.value = '';
           fLunch.value = '';
           fDinner.value = '';
+          fCoffee.value = '1';
+          fTea.value = '1';
         }
         updateLiveCalories();
         syncWaterUI(fWater.value);
@@ -3233,7 +3250,17 @@
     // --- PWA SERVICE WORKER & INSTALADOR MÓVIL ---
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          reg.update().catch(() => {});
+        }).catch(() => {});
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       });
     }
 
@@ -3274,89 +3301,157 @@
       if (pwaBanner) pwaBanner.hidden = true;
     });
 
-    // --- CÁMARA DE REGENERACIÓN: FOTOS Y MEDIDAS ---
+    // --- CÁMARA DE REGENERACIÓN: HISTÓRICO DE PERÍMETROS ---
     function initRegenChamber() {
-      const photoBefore = localStorage.getItem('scouter_photo_before');
-      const photoCurrent = localStorage.getItem('scouter_photo_current');
-      const imgBefore = document.getElementById('regen-img-before');
-      const textBefore = document.getElementById('regen-text-before');
-      const imgCurrent = document.getElementById('regen-img-current');
-      const textCurrent = document.getElementById('regen-text-current');
-
-      if (photoBefore && imgBefore && textBefore) {
-        imgBefore.src = photoBefore;
-        imgBefore.hidden = false;
-        textBefore.hidden = true;
-      }
-      if (photoCurrent && imgCurrent && textCurrent) {
-        imgCurrent.src = photoCurrent;
-        imgCurrent.hidden = false;
-        textCurrent.hidden = true;
-      }
-
-      const dropBefore = document.getElementById('regen-drop-before');
-      const fileBefore = document.getElementById('regen-file-before');
-      dropBefore?.addEventListener('click', () => fileBefore?.click());
-      fileBefore?.addEventListener('change', (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          const b64 = evt.target.result;
-          localStorage.setItem('scouter_photo_before', b64);
-          if (imgBefore && textBefore) {
-            imgBefore.src = b64;
-            imgBefore.hidden = false;
-            textBefore.hidden = true;
-          }
-          showToast('📸 Foto inicial (108 kg) guardada');
-        };
-        reader.readAsDataURL(file);
-      });
-
-      const dropCurrent = document.getElementById('regen-drop-current');
-      const fileCurrent = document.getElementById('regen-file-current');
-      dropCurrent?.addEventListener('click', () => fileCurrent?.click());
-      fileCurrent?.addEventListener('change', (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          const b64 = evt.target.result;
-          localStorage.setItem('scouter_photo_current', b64);
-          if (imgCurrent && textCurrent) {
-            imgCurrent.src = b64;
-            imgCurrent.hidden = false;
-            textCurrent.hidden = true;
-          }
-          showToast('📸 Foto actual (96 kg) guardada');
-        };
-        reader.readAsDataURL(file);
-      });
-
-      const savedMeasures = JSON.parse(localStorage.getItem('scouter_measures') || '{}');
+      const fDate = document.getElementById('f-measure-date');
       const fWaist = document.getElementById('f-measure-waist');
       const fChest = document.getElementById('f-measure-chest');
       const fArm = document.getElementById('f-measure-arm');
       const fThigh = document.getElementById('f-measure-thigh');
+      const tbody = document.getElementById('regen-history-tbody');
+      const countLabel = document.getElementById('regen-history-count');
+      const btnSave = document.getElementById('btn-save-measures');
 
-      if (fWaist && savedMeasures.waist) fWaist.value = savedMeasures.waist;
-      if (fChest && savedMeasures.chest) fChest.value = savedMeasures.chest;
-      if (fArm && savedMeasures.arm) fArm.value = savedMeasures.arm;
-      if (fThigh && savedMeasures.thigh) fThigh.value = savedMeasures.thigh;
+      const getTodayStr = () => {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      if (fDate && !fDate.value) fDate.value = getTodayStr();
 
-      const btnSaveMeasures = document.getElementById('btn-save-measures');
-      btnSaveMeasures?.addEventListener('click', () => {
-        const measures = {
-          waist: fWaist?.value || '',
-          chest: fChest?.value || '',
-          arm: fArm?.value || '',
-          thigh: fThigh?.value || '',
+      const loadHistory = () => {
+        let history = [];
+        try {
+          const raw = localStorage.getItem('scouter_measures_history');
+          if (raw) {
+            history = JSON.parse(raw);
+          } else {
+            const legacyRaw = localStorage.getItem('scouter_measures');
+            if (legacyRaw) {
+              const leg = JSON.parse(legacyRaw);
+              if (leg.waist || leg.chest || leg.arm || leg.thigh) {
+                const legacyDate = leg.updatedAt ? leg.updatedAt.slice(0, 10) : getTodayStr();
+                history = [{
+                  id: 'm_' + Date.now(),
+                  date: legacyDate,
+                  waist: leg.waist || '',
+                  chest: leg.chest || '',
+                  arm: leg.arm || '',
+                  thigh: leg.thigh || ''
+                }];
+                localStorage.setItem('scouter_measures_history', JSON.stringify(history));
+              }
+            }
+          }
+        } catch (e) {
+          history = [];
+        }
+        return Array.isArray(history) ? history : [];
+      };
+
+      const renderHistory = () => {
+        const history = loadHistory();
+        if (countLabel) countLabel.textContent = `${history.length} registro${history.length === 1 ? '' : 's'}`;
+        if (!tbody) return;
+
+        if (history.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="padding:16px;text-align:center;color:var(--muted);font-style:italic">No hay registros de perímetros todavía. Añade el primero arriba.</td></tr>`;
+          return;
+        }
+
+        const sorted = [...history].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+        tbody.innerHTML = sorted.map((item, idx) => {
+          const prevItem = sorted[idx + 1];
+          const diffWaist = (item.waist && prevItem && prevItem.waist)
+            ? (parseFloat(item.waist) - parseFloat(prevItem.waist)).toFixed(1)
+            : null;
+          let diffBadge = '';
+          if (diffWaist !== null && !isNaN(diffWaist)) {
+            const val = parseFloat(diffWaist);
+            if (val < 0) {
+              diffBadge = ` <span style="color:#00ff66;font-size:.72rem">(${val} cm)</span>`;
+            } else if (val > 0) {
+              diffBadge = ` <span style="color:var(--amber);font-size:.72rem">(+${val} cm)</span>`;
+            } else {
+              diffBadge = ` <span style="color:var(--muted);font-size:.72rem">(=)</span>`;
+            }
+          }
+
+          return `
+            <tr style="border-bottom:1px solid #131d27">
+              <td style="padding:8px 6px;color:var(--cyan);font-weight:700">${item.date || '—'}</td>
+              <td style="padding:8px 6px">${item.waist ? item.waist + ' cm' + diffBadge : '<span style="color:var(--muted)">—</span>'}</td>
+              <td style="padding:8px 6px">${item.chest ? item.chest + ' cm' : '<span style="color:var(--muted)">—</span>'}</td>
+              <td style="padding:8px 6px">${item.arm ? item.arm + ' cm' : '<span style="color:var(--muted)">—</span>'}</td>
+              <td style="padding:8px 6px">${item.thigh ? item.thigh + ' cm' : '<span style="color:var(--muted)">—</span>'}</td>
+              <td style="padding:8px 6px;text-align:right">
+                <button type="button" class="btn-del-measure" data-id="${item.id || item.date}" style="background:transparent;border:1px solid #ff336644;color:var(--red);padding:2px 8px;border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:.72rem">✕</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        tbody.querySelectorAll('.btn-del-measure').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            if (!confirm('¿Eliminar esta medición del histórico?')) return;
+            const updated = loadHistory().filter(h => (h.id || h.date) !== id);
+            localStorage.setItem('scouter_measures_history', JSON.stringify(updated));
+            renderHistory();
+            showToast('🗑️ Medición eliminada');
+          });
+        });
+      };
+
+      btnSave?.addEventListener('click', () => {
+        const date = fDate?.value || getTodayStr();
+        const waist = fWaist?.value?.trim() || '';
+        const chest = fChest?.value?.trim() || '';
+        const arm = fArm?.value?.trim() || '';
+        const thigh = fThigh?.value?.trim() || '';
+
+        if (!waist && !chest && !arm && !thigh) {
+          showToast('⚠️ Introduce al menos un perímetro en cm');
+          return;
+        }
+
+        const history = loadHistory();
+        const existingIdx = history.findIndex(h => h.date === date);
+        const newEntry = {
+          id: existingIdx >= 0 ? (history[existingIdx].id || ('m_' + Date.now())) : ('m_' + Date.now()),
+          date,
+          waist,
+          chest,
+          arm,
+          thigh,
           updatedAt: new Date().toISOString()
         };
-        localStorage.setItem('scouter_measures', JSON.stringify(measures));
-        showToast('📏 Perímetros corporales guardados con éxito');
+
+        if (existingIdx >= 0) {
+          history[existingIdx] = newEntry;
+        } else {
+          history.push(newEntry);
+        }
+
+        localStorage.setItem('scouter_measures_history', JSON.stringify(history));
+        localStorage.setItem('scouter_measures', JSON.stringify({ waist, chest, arm, thigh, updatedAt: newEntry.updatedAt }));
+        renderHistory();
+        showToast('📏 Perímetros registrados con éxito');
       });
+
+      const history = loadHistory();
+      if (history.length > 0) {
+        const latest = [...history].sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+        if (fWaist && latest.waist) fWaist.value = latest.waist;
+        if (fChest && latest.chest) fChest.value = latest.chest;
+        if (fArm && latest.arm) fArm.value = latest.arm;
+        if (fThigh && latest.thigh) fThigh.value = latest.thigh;
+      }
+
+      renderHistory();
     }
 
     initRegenChamber();
