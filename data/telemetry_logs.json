@@ -1,22 +1,22 @@
 [
   {
-    "id": "cb7f7441-cef6-4603-a20d-5ba26c2449ac",
+    "id": "db4c5403-92af-4641-a3e7-59e47ae475d8",
     "date": "2026-11-13",
     "dayName": "VIERNES",
     "weight": 96.3,
-    "estimatedCalories": 630,
+    "estimatedCalories": 750,
     "caloriesOverride": null,
-    "estimatedProtein": 59,
+    "estimatedProtein": 128,
     "proteinOverride": null,
     "caloriesBreakdown": {
-      "total": 630,
-      "totalProt": 59,
+      "total": 750,
+      "totalProt": 128,
       "bKcal": 480,
-      "lKcal": 0,
+      "lKcal": 120,
       "dKcal": 0,
       "extraKcal": 150,
       "bProt": 35,
-      "lProt": 0,
+      "lProt": 69,
       "dProt": 0,
       "extraProt": 24
     },
@@ -31,7 +31,7 @@
     "bodyStatus": "100% Operativo",
     "bodyNotes": "",
     "breakfast": "Porridge",
-    "lunch": "",
+    "lunch": "Berenjena con carne picada y un poco de queso por encima gratinado",
     "dinner": "",
     "coffee": "1",
     "tea": "1",
@@ -42,7 +42,7 @@
     "walk": "NO",
     "walkNotes": "",
     "cardioImage": "",
-    "createdAt": "2026-11-13T07:31:31.612Z"
+    "createdAt": "2026-11-13T12:17:50.047Z"
   },
   {
     "id": "636c149e-19d2-4b29-8cc6-ef09cda0f9c3",
