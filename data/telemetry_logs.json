@@ -1,6 +1,6 @@
 [
   {
-    "id": "f4cc9a8b-94fb-4f23-a413-bd015774c193",
+    "id": "cb7f7441-cef6-4603-a20d-5ba26c2449ac",
     "date": "2026-11-13",
     "dayName": "VIERNES",
     "weight": 96.3,
@@ -20,10 +20,10 @@
       "dProt": 0,
       "extraProt": 24
     },
-    "sleepHours": 7.5,
-    "sleepQuality": "4",
-    "energy": "Alta",
-    "water": "2.5L",
+    "sleepHours": 4,
+    "sleepQuality": "2",
+    "energy": "Baja",
+    "water": "1.5L",
     "supplements": [
       "Proteína Whey",
       "Creatina"
@@ -42,7 +42,7 @@
     "walk": "NO",
     "walkNotes": "",
     "cardioImage": "",
-    "createdAt": "2026-11-13T06:06:31.775Z"
+    "createdAt": "2026-11-13T07:31:31.612Z"
   },
   {
     "id": "636c149e-19d2-4b29-8cc6-ef09cda0f9c3",
