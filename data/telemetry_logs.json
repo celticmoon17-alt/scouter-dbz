@@ -1,5 +1,75 @@
 [
   {
+    "id": "475a5747-bc9f-4670-9b90-aa42b89a216d",
+    "date": "2026-11-16",
+    "dayName": "LUNES",
+    "weight": 95.9,
+    "estimatedCalories": 1090,
+    "caloriesOverride": null,
+    "estimatedProtein": 114,
+    "proteinOverride": null,
+    "caloriesBreakdown": {
+      "total": 1090,
+      "totalProt": 114,
+      "bKcal": 480,
+      "lKcal": 460,
+      "dKcal": 0,
+      "extraKcal": 150,
+      "bProt": 35,
+      "lProt": 55,
+      "dProt": 0,
+      "extraProt": 24
+    },
+    "sleepHours": 6,
+    "sleepQuality": "4",
+    "energy": "Alta",
+    "water": "1.5L",
+    "supplements": [
+      "Proteína Whey",
+      "Creatina"
+    ],
+    "bodyStatus": "100% Operativo",
+    "bodyNotes": "",
+    "breakfast": "Porridge",
+    "lunch": "2 filetes de lubina con verdura y 6 piezas de sushi",
+    "dinner": "",
+    "coffee": "1",
+    "tea": "1",
+    "alcohol": "NO",
+    "routineDone": "SI",
+    "routinePlan": "🦵 Lunes: DÍA DE PIERNA",
+    "exercises": [
+      {
+        "name": "Prensa",
+        "weight": "",
+        "reps": "10",
+        "sets": "3"
+      },
+      {
+        "name": "Extensión de cuádriceps",
+        "weight": "",
+        "reps": "10",
+        "sets": "3"
+      },
+      {
+        "name": "Aductor",
+        "weight": "",
+        "reps": "10",
+        "sets": "3"
+      },
+      {
+        "name": "Abductor",
+        "weight": "",
+        "reps": "10",
+        "sets": "3"
+      }
+    ],
+    "walk": "NO",
+    "walkNotes": "",
+    "cardioImage": "",
+    "createdAt": "2026-11-16T08:13:57.977Z"
+  },
+  {
     "id": "72eebf62-4bab-4dd2-b218-83c308d983f9",
     "date": "2026-11-15",
     "dayName": "DOMINGO",
